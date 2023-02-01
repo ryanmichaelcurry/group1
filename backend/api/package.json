@@ -1,0 +1,31 @@
+{
+  "name": "onebutton-api",
+  "version": "1.0.0",
+  "description": "there is a button",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanmichaelcurry/onebutton-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanmichaelcurry/onebutton-api/issues"
+  },
+  "homepage": "https://github.com/ryanmichaelcurry/onebutton-api#readme",
+  "dependencies": {
+    "@socket.io/redis-adapter": "^7.2.0",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^6.6.1",
+    "mysql2": "^2.3.3",
+    "redis": "^3.1.2",
+    "socket.io": "^4.5.1"
+  }
+}

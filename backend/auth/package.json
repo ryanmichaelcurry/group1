@@ -1,0 +1,37 @@
+{
+  "name": "contrive-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanmichaelcurry/contrive-auth.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanmichaelcurry/contrive-auth/issues"
+  },
+  "homepage": "https://github.com/ryanmichaelcurry/contrive-auth#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "log4js": "^6.7.0",
+    "mysql2": "^2.3.3",
+    "user-agents": "^1.0.1020",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "engines": {
+    "node": "16.15.0",
+    "npm": "~8.10.0"
+  }
+}
