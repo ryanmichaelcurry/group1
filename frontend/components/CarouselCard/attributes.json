@@ -1,0 +1,18 @@
+{
+  "title": "Card with carousel",
+  "category": "carousels",
+  "author": "rtivital",
+  "withColor": true,
+  "changelog": "september-2022",
+  "dependencies": [
+    "/core/image/",
+    "/core/text/",
+    "/core/card/",
+    "/core/button/",
+    "/others/carousel/"
+  ],
+  "canvas": {
+    "center": true,
+    "maxWidth": 350
+  }
+}

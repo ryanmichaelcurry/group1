@@ -1,8 +1,13 @@
-# Mantine Next Template
+# Mantine UI
 
-Get started with Mantine + Next with just a few button clicks.
-Click `Use this template` button at the header of repository or [follow this link](https://github.com/mantinedev/mantine-minimal-next-template/generate) and create new repository with `@mantine` packages. Note that you have to be logged in to GitHub to generate template.
+[Mantine UI](https://ui.mantine.dev/) is a set of more than 120 responsive components built with [Mantine](https://mantine.dev/). All components support dark/light color scheme and Mantine theme customizations. Mantine UI is free for everyone.
 
-## Minimal template
+## Contributing
 
-This template includes minimal setup for server side rendering with Next.js, you can find a [fully featured template here](https://github.com/mantinedev/mantine-next-template).
+Mantine UI is an open source project with MIT license – you can browse source code and use components
+in your applications without any limitations. Although the project is open source, **we do not accept
+any contributions to the codebase of Mantine UI (unless maintainers asked you to send a PR).** You can contribute to the [Mantine library](https://github.com/mantinedev/mantine) codebase instead.
+
+## License
+
+MIT
