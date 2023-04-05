@@ -3,10 +3,6 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 
-const { Server } = require("socket.io");
-const { createClient } = require("redis");
-const { createAdapter } = require("@socket.io/redis-adapter");
-
 var mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
 
@@ -51,7 +47,7 @@ app.post("/register", (req, res) => {
   try {
     // Declare variables from request
 
-    const username = req.body.username;
+    //const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
     const ip_address =
@@ -61,8 +57,8 @@ app.post("/register", (req, res) => {
     // We need to check if the username is available
 
     pool.query(
-      "SELECT username FROM user WHERE username=?",
-      [username],
+      "SELECT email FROM user WHERE email = ?",
+      [email],
       (err, data) => {
         if (err) {
           logger.error(err);
@@ -72,7 +68,7 @@ app.post("/register", (req, res) => {
 
         if (data.length > 0) {
           // username already exits
-          res.status(501).json({ status: -69 }); // i was drunk when I wrote this lol
+          res.status(501).json({ status: -2 });
           return;
         }
 
@@ -86,8 +82,8 @@ app.post("/register", (req, res) => {
           })
           .then(function (response) {
             pool.query(
-              "INSERT INTO user (username, email, account_guid) VALUES (?, ?, ?)",
-              [username, email, response.data.account_guid],
+              "INSERT INTO user (email, account_guid) VALUES (?, ?)",
+              [email, response.data.account_guid],
               (err, data) => {
                 if (err) {
                   logger.error(err);
@@ -243,7 +239,7 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.json({ "hire-me": "https://github.com/ryanmichaelcurry/group1" });
+  res.json({ "repo": "https://github.com/ryanmichaelcurry/group1" });
 });
 
 /* Server */
