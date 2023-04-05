@@ -1,11 +1,13 @@
 {
   "ExpandedNodes": [
     "",
-    "\\backend",
-    "\\backend\\api",
-    "\\backend\\auth",
-    "\\frontend\\pages"
+    "\\frontend",
+    "\\frontend\\src",
+    "\\frontend\\src\\components",
+    "\\frontend\\src\\data",
+    "\\frontend\\src\\pages",
+    "\\frontend\\src\\pages\\component"
   ],
-  "SelectedNode": "\\backend\\api\\package.json",
+  "SelectedNode": "\\frontend\\src\\pages\\component\\[component].tsx",
   "PreviewInSolutionExplorer": false
 }
