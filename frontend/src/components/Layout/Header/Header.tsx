@@ -8,6 +8,8 @@ import useStyles from './Header.styles';
 import logo from '../../../data/images/logo-no-background.png';
 import { ShoppingCart, User } from 'tabler-icons-react';
 import { IconSearch, IconSettings, IconDoorExit } from '@tabler/icons-react';
+import UserContextProvider, { UserContext } from '../../../pages/component/UserContext';
+
 
 
 interface HeaderProps {
@@ -23,9 +25,24 @@ export function Header({ toggleDir, dir }: HeaderProps) {
     const router = useRouter();
     
 
-    return (
+    
 
-        <div className={cx(classes.header, RemoveScroll.classNames.zeroRight)}>
+    return (
+        <UserContextProvider>
+            <UserContext.Consumer>{(context) => {
+
+                /*gets logout function from userContext module*/
+                const logout = context;
+                function logOut() {
+                    // when user clicks log out
+                    // log their account out and redirect to login screen
+
+                    logout();
+                    router.push('/login');
+
+                }
+
+                return <div className={cx(classes.header, RemoveScroll.classNames.zeroRight)}>
 
             <Container size="xl" px="md" className={classes.inner}>
                 <Center component="a" href="/" sx={(theme) => theme.fn.focusStyles()}>
@@ -49,7 +66,11 @@ export function Header({ toggleDir, dir }: HeaderProps) {
                             <Link href="/Profile">
                                 <Menu.Item icon={<IconSettings size={14} />}>View Profile</Menu.Item>
                             </Link>
-                            <Menu.Item color="red" icon={<IconDoorExit size={14} />}>Log Out</Menu.Item>
+                            
+                            
+                            <Menu.Item color="red" onClick={logOut} icon={<IconDoorExit size={14} />}>Log Out</Menu.Item>
+                           
+                            
                         </Menu.Dropdown>
                     </Menu>
 
@@ -63,5 +84,11 @@ export function Header({ toggleDir, dir }: HeaderProps) {
                 </Center>
             </Container>
         </div>
+            }}
+            </UserContext.Consumer>
+        </UserContextProvider>
+
+
+        
     );
 }

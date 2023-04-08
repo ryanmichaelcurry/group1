@@ -1,26 +1,28 @@
 import Head from 'next/head';
-import { NumberInput, Autocomplete, Container, Grid, SimpleGrid, Skeleton, useMantineTheme, rem, Card, Image, Text, Badge, Button, Group } from '@mantine/core';
-import { CATEGORIES } from '../../data';
-import { Banner } from './Banner/Banner';
-import { CategoriesList } from './CategoriesList/CategoriesList';
-import { NavLink } from '@mantine/core';
-import React from 'react';
+import { NumberInput, Autocomplete, Container, Grid, useMantineTheme, Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { Filter } from 'tabler-icons-react';
 import { useState } from "react";
-import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
+import React, { useContext, Component } from 'react';
+import UserContextProvider, { UserContext } from  '../../pages/component/UserContext';
+
+
 
 interface HomePageProps {
     componentsCountByCategory: Record<string, number>;
 }
 
+
+
 export function HomePage() {
 
-    const loggedInUserId = Cookies.get('loggedInUser');
+     
+    
+    
 
-    <Route exact path="/">
-        {loggedIn ? <Redirect to="/dashboard" /> : <PublicHomePage />}
-    </Route>
+
+    
 
     const theme = useMantineTheme();
    
@@ -85,6 +87,17 @@ export function HomePage() {
 
     }
 
+    // if user is not logged in redirect to login screen
+    const router = useRouter();
+    function verifyLoggedIn(user_id)  {
+        if (typeof window !== 'undefined') {
+            if (user_id == "defaultUserName") router.push('/login');
+        }
+
+    }
+    
+    
+
 
     // this is used for product search filtering
     const [state, setstate] = useState({
@@ -109,80 +122,94 @@ export function HomePage() {
     
 
     return (
-        <>
-            <Head>
-                <title>Mantine UI</title>
-            </Head>
+        <><UserContextProvider>
+            <UserContext.Consumer>{(context) => {
+                const { user_id, first, last, status } = context;
+                
+                verifyLoggedIn(user_id);
 
-            <div id="main">
-                <Container my="sm">
-                    <Autocomplete
-                        placeholder="Search the Store"
-                        icon={<IconSearch size="1rem" stroke={1.5} />}
-                        data={['pARperweight-15', 'Big N Heavy', 'Big and Blue',]}
-                        onChange={handleChange}
-                        value={state.query}
-                    />
+                return (<div>
+                    <Head>
+                    <title>LegalPaperweights</title>
+                </Head>
+
+                <div id="main">
+                    <Container my="sm">
+                        <Autocomplete
+                            placeholder="Search the Store"
+                            icon={<IconSearch size="1rem" stroke={1.5} />}
+                            data={['pARperweight-15', 'Big N Heavy', 'Big and Blue',]}
+                            onChange={handleChange}
+                            value={state.query}
+                        />
       
-                    <hr/>
+                        <hr/>
                     
-                    <Grid grow>
-                        {(state.list.map(ProductData => {
+                        <Grid grow>
+                            {(state.list.map(ProductData => {
                             
 
-                            return<Grid.Col span={4}>
-                                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                                    <Card.Section>
-                                        <Image
-                                            src={ProductData.image_url}
+                                return<Grid.Col span={4}>
+                                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                                        <Card.Section>
+                                            <Image
+                                                src={ProductData.image_url}
 
-                                            fit="contain"
-                                            alt={ProductData.title}
-                                        />
-                                    </Card.Section>
+                                                fit="contain"
+                                                alt={ProductData.title}
+                                            />
+                                        </Card.Section>
 
-                                    <Group position="apart" mt="md" mb="xs">
-                                        <Text weight={500}>{ProductData.title}</Text>
-                                        <Group position="right">
-                                            <Badge color="pink" variant="light">
-                                                QTY: {ProductData.quantity}
-                                            </Badge>
-                                            <Badge color="pink" variant="light">
-                                                ${ProductData.price}
-                                            </Badge>
+                                        <Group position="apart" mt="md" mb="xs">
+                                            <Text weight={500}>{ProductData.title}</Text>
+                                            <Group position="right">
+                                                <Badge color="pink" variant="light">
+                                                    QTY: {ProductData.quantity}
+                                                </Badge>
+                                                <Badge color="pink" variant="light">
+                                                    ${ProductData.price}
+                                                </Badge>
+                                            </Group>
                                         </Group>
-                                    </Group>
 
-                                    <Text size="sm" color="dimmed">
-                                        {ProductData.description}
-                                    </Text>
+                                        <Text size="sm" color="dimmed">
+                                            {ProductData.description}
+                                        </Text>
 
-                                    <Group spacing="xs" noWrap={true}>
-                                        <NumberInput
-                                            id="ref"
-                                            defaultValue={1}
-                                            min={1}
-                                            max={ProductData.quantity}
-                                            placeholder="QTY"
-                                            label="Amount"
-                                            withAsterisk
+                                        <Group spacing="xs" noWrap={true}>
+                                            <NumberInput
+                                                id="ref"
+                                                defaultValue={1}
+                                                min={1}
+                                                max={ProductData.quantity}
+                                                placeholder="QTY"
+                                                label="Amount"
+                                                withAsterisk
 
 
-                                        />
-                                        <Button onClick={addToCart} variant="light" color="blue" fullWidth mt="md" radius="md">
-                                            Add to Cart
-                                        </Button>
-                                    </Group>
-                                    </Card>
-                                    </Grid.Col>
+                                            />
+                                            <Button onClick={addToCart} variant="light" color="blue" fullWidth mt="md" radius="md">
+                                                Add to Cart
+                                            </Button>
+                                        </Group>
+                                        </Card>
+                                        </Grid.Col>
                             
-                        }))}
-                        </Grid>
+                            }))}
+                            </Grid>
                     
-                    {/*<Grid grow>{grid}</Grid>*/}
-                </Container>
+                        {/*<Grid grow>{grid}</Grid>*/}
+                    </Container>
 
-            </div>
+                    </div>
+                </div>
+                    )
+            }}
+                
+
+                
+            </UserContext.Consumer>
+            </UserContextProvider>
         </>
     );
 }
