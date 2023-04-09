@@ -12,12 +12,12 @@ import {
   Checkbox,
   Anchor,
   Stack,
-  Container
+  Container,
 } from '@mantine/core';
 import React, { useEffect, useState, useContext } from 'react';
 
 //import { redirect } from 'next/navigation';
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router';
 
 //import Cookies from 'js-cookie';
 
@@ -51,19 +51,19 @@ export function AuthenticationForm() {
       email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
       password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
     },
-
   });
 
-  
-  if(state.userToken != null) {
-    router.push('/404');  // redirect to home page, for now, 404 works
+  if (state.userToken != null) {
+    router.push('/home'); // redirect to home page
   }
-  
 
   return (
-    <Container size="lg" px="md
-    ">
-      <Text size="lg" weight={500} style={{marginTop: 64}}>
+    <Container
+      size="lg"
+      px="md
+    "
+    >
+      <Text size="lg" weight={500} style={{ marginTop: 64 }}>
         Welcome to Legal Paperweights!
       </Text>
 
@@ -140,18 +140,17 @@ export function AuthenticationForm() {
             : "Don't have an account? Register"}
         </Anchor>
 
-        <Button 
-            type="submit"
-            radius="xl" 
-            onClick={ () => {
-                if(type == "login") {
-                    signIn({ email, password });
-                }
-                else {
-                    signUp({email, password, firstName, lastName, terms, dateOfBirth});
-                }
-                
-                }}>
+        <Button
+          type="submit"
+          radius="xl"
+          onClick={() => {
+            if (type == 'login') {
+              signIn({ email, password });
+            } else {
+              signUp({ email, password, firstName, lastName, terms, dateOfBirth });
+            }
+          }}
+        >
           {upperFirst(type)}
         </Button>
       </Group>
