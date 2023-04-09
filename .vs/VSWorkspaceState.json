@@ -3,11 +3,9 @@
     "",
     "\\frontend",
     "\\frontend\\src",
-    "\\frontend\\src\\components",
-    "\\frontend\\src\\context",
-    "\\frontend\\src\\data",
     "\\frontend\\src\\pages",
     "\\frontend\\src\\pages\\component"
   ],
+  "SelectedNode": "\\frontend\\src\\pages\\component\\loadUserContext.js",
   "PreviewInSolutionExplorer": false
 }

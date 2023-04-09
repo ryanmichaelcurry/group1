@@ -18,10 +18,13 @@ import {
     Rem,
     Select
 } from '@mantine/core';
-import UserContextProvider, { UserContext } from './component/UserContext';
+import { useSessionStorage } from './component/loadUserContext.js';
 
 export function AuthenticationForm(props: PaperProps) {
 
+   
+
+    
     
     const [type, toggle] = useToggle(['login', 'register']);
     const form = useForm({
@@ -41,13 +44,12 @@ export function AuthenticationForm(props: PaperProps) {
     });
 
     return (
-        <UserContextProvider>
-            <UserContext.Consumer>{(context) => {
-                const { user_id, first, last, status, login } = context;
+       
+            
                 
                 
 
-                return <Paper radius="md" p="xl" withBorder {...props}>
+                <Paper radius="md" p="xl" withBorder {...props}>
                     <Text size="lg" weight={500}>
                         Welcome to Legal Paperweights!
                     </Text>
@@ -57,7 +59,7 @@ export function AuthenticationForm(props: PaperProps) {
                     <Divider label="Login or Register Below" labelPosition="center" my="lg" />
 
                     <form onSubmit={form.onSubmit((e) => {
-                        
+                        var user;
                         var success = false;
                         // this is after user hits register or login
                         if (type == 'register') {
@@ -68,7 +70,7 @@ export function AuthenticationForm(props: PaperProps) {
 
                             // put user data into the cookie. This allows their info to be accessed elsewhere
                             // I'm using sample data for testing purposes
-                            var user = {
+                            user = {
                                 user_id: 1231,
                                 first: 'Hutton',
                                 last: 'Smith',
@@ -86,7 +88,7 @@ export function AuthenticationForm(props: PaperProps) {
 
                             // put user data into the cookie. This allows their info to be accessed elsewhere
                             // I'm using sample data for testing purposes
-                            var user = {
+                            user = {
                                 user_id: 1231,
                                 first: 'Hutton',
                                 last: 'Smith',
@@ -96,7 +98,8 @@ export function AuthenticationForm(props: PaperProps) {
 
                             if (success) {
                                 
-                                login(user.user_id, user.first, user.last, user.status);
+                                
+                                sessionStorage.setItem('loggedInUser', JSON.stringify(user));
                                 window.location.href = "/";
                             }
 
@@ -194,10 +197,9 @@ export function AuthenticationForm(props: PaperProps) {
                         </Group>
                     </form>
                 </Paper>
-            }
-            }
-         </UserContext.Consumer>
-        </UserContextProvider>
+            
+         
+        
     );
 }
 

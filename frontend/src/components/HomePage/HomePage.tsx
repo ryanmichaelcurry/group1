@@ -4,8 +4,9 @@ import { IconSearch } from '@tabler/icons-react';
 import { Filter } from 'tabler-icons-react';
 import { useState } from "react";
 import { useRouter } from 'next/router';
-import React, { useContext, Component } from 'react';
-import UserContextProvider, { UserContext } from  '../../pages/component/UserContext';
+import React, { useContext, useEffect, Component } from 'react';
+import UserContextProvider, { UserContext } from '../../pages/component/UserContext';
+import {useSessionStorage} from  '../../pages/component/loadUserContext.js';
 
 
 
@@ -17,11 +18,19 @@ interface HomePageProps {
 
 export function HomePage() {
 
-     
-    
-    
+    // gets current user session info. If not logged in, redirect to login
+    var loggedInUser;
+    if (typeof window !== 'undefined') {
+        
+        const router = useRouter();
 
+        // see if user is logged in. If not, redirect to login page
+        const retrieveUserStr = sessionStorage.getItem('loggedInUser') != null ? sessionStorage.getItem('loggedInUser') : '{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}';
+        loggedInUser = JSON.parse(retrieveUserStr);
+        
+        if (loggedInUser.user_id == 0) router.push('/login');
 
+    }
     
 
     const theme = useMantineTheme();
@@ -87,17 +96,6 @@ export function HomePage() {
 
     }
 
-    // if user is not logged in redirect to login screen
-    const router = useRouter();
-    function verifyLoggedIn(user_id)  {
-        if (typeof window !== 'undefined') {
-            if (user_id == "defaultUserName") router.push('/login');
-        }
-
-    }
-    
-    
-
 
     // this is used for product search filtering
     const [state, setstate] = useState({
@@ -122,19 +120,17 @@ export function HomePage() {
     
 
     return (
-        <><UserContextProvider>
-            <UserContext.Consumer>{(context) => {
-                const { user_id, first, last, status } = context;
-                
-                verifyLoggedIn(user_id);
-
-                return (<div>
+        <>
+                <div>
                     <Head>
                     <title>LegalPaperweights</title>
                 </Head>
 
                 <div id="main">
                     <Container my="sm">
+                        <h2>
+                            Welcome back, {loggedInUser.first} {loggedInUser.last}
+                        </h2>
                         <Autocomplete
                             placeholder="Search the Store"
                             icon={<IconSearch size="1rem" stroke={1.5} />}
@@ -198,18 +194,12 @@ export function HomePage() {
                             }))}
                             </Grid>
                     
-                        {/*<Grid grow>{grid}</Grid>*/}
+           
                     </Container>
 
                     </div>
                 </div>
-                    )
-            }}
-                
-
-                
-            </UserContext.Consumer>
-            </UserContextProvider>
+            
         </>
     );
 }

@@ -1,14 +1,14 @@
 ﻿import { Container, Menu, Center, RemoveScroll, Group, Button } from '@mantine/core';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, from 'react';
 import { ColorSchemeControl } from '@mantine/ds';
 import Link from 'next/link';
 import useStyles from './Header.styles';
 import logo from '../../../data/images/logo-no-background.png';
 import { ShoppingCart, User } from 'tabler-icons-react';
 import { IconSearch, IconSettings, IconDoorExit } from '@tabler/icons-react';
-import UserContextProvider, { UserContext } from '../../../pages/component/UserContext';
+
 
 
 
@@ -23,26 +23,44 @@ export function Header({ toggleDir, dir }: HeaderProps) {
 
     // router is used to determine what the pathname is.
     const router = useRouter();
+
+    // gets current user session info. If not logged in, redirect to login
+    var loggedInUser;
+    if (typeof window !== 'undefined') {
+
+        
+
+        // see if user is logged in. Store info if so
+        const retrieveUserStr = sessionStorage.getItem('loggedInUser') != null ? sessionStorage.getItem('loggedInUser') : '{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}';
+        loggedInUser = JSON.parse(retrieveUserStr);
+
+    }
+
+    
+    
+  
+    function logOut() {
+        // when user clicks log out
+        // log their account out and redirect to login screen
+
+        sessionStorage.setItem('loggedInUser', JSON.stringify('{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}'));
+        
+        router.push('/login');
+
+    }
+
+    
     
 
     
 
     return (
-        <UserContextProvider>
-            <UserContext.Consumer>{(context) => {
+        
+            
 
-                /*gets logout function from userContext module*/
-                const logout = context;
-                function logOut() {
-                    // when user clicks log out
-                    // log their account out and redirect to login screen
+                
 
-                    logout();
-                    router.push('/login');
-
-                }
-
-                return <div className={cx(classes.header, RemoveScroll.classNames.zeroRight)}>
+                <div className={cx(classes.header, RemoveScroll.classNames.zeroRight)}>
 
             <Container size="xl" px="md" className={classes.inner}>
                 <Center component="a" href="/" sx={(theme) => theme.fn.focusStyles()}>
@@ -84,9 +102,9 @@ export function Header({ toggleDir, dir }: HeaderProps) {
                 </Center>
             </Container>
         </div>
-            }}
-            </UserContext.Consumer>
-        </UserContextProvider>
+            
+            
+        
 
 
         
