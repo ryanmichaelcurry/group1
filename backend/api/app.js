@@ -50,9 +50,19 @@ app.post("/register", (req, res) => {
     //const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
+    const first = req.body.firstName;
+    const last = req.body.lastName;
+    const dateOfBirth = req.body.dateOfBirth;
+    const terms = req.body.terms;
+
     const ip_address =
       req.header("x-forwarded-for") || req.socket.remoteAddress;
     const user_agent = req.header("User-Agent");
+
+    if (!terms) {
+      res.status(401).json({ status: -1 });
+      return;
+    }
 
     // We need to check if the username is available
 
@@ -82,8 +92,15 @@ app.post("/register", (req, res) => {
           })
           .then(function (response) {
             pool.query(
-              "INSERT INTO user (email, account_guid) VALUES (?, ?)",
-              [email, response.data.account_guid],
+              "INSERT INTO user (email, account_guid, first, last, dateOfBirth, terms) VALUES (?, ?, ?, ?, ?, ?)",
+              [
+                email,
+                response.data.account_guid,
+                first,
+                last,
+                dateOfBirth,
+                terms,
+              ],
               (err, data) => {
                 if (err) {
                   logger.error(err);
@@ -104,7 +121,15 @@ app.post("/register", (req, res) => {
                   })
                   .then(function (response) {
                     logger.info(response.data);
-                    res.json(response.data);
+                    res.json({
+                      ...response.data,
+                      user: {
+                        email,
+                        firstName: first,
+                        lastName: last,
+                        dateOfBirth
+                      }
+                    });
                   })
                   .catch(function (error) {
                     logger.info(error.data);
@@ -157,7 +182,35 @@ app.post("/login", (req, res) => {
       })
       .then(function (response) {
         logger.info(response.data);
-        res.json(response.data);
+
+        // get user info
+        pool.query(
+          "SELECT * FROM user WHERE email = ?",
+          [email],
+          (err, data) => {
+            if (err) {
+              logger.error(err);
+              res.status(401).json({ status: -1 });
+              return;
+            }
+
+            if (data.length < 0) {
+              // username does not exist
+              res.status(501).json({ status: -2 });
+              return;
+            }
+
+            res.json({
+              ...response.data,
+              user: {
+                email: data[0].email,
+                firstName: data[0].first,
+                lastName: data[0].last,
+                dateOfBirth: data[0].dateOfBirth
+              }
+            });
+          }
+        );
       })
       .catch(function (error) {
         logger.info(error.data);
@@ -167,6 +220,14 @@ app.post("/login", (req, res) => {
     res.status(500).json({ status: 0 });
   }
 });
+
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+};
 
 /* Token Refresh Proxy */
 app.post("/refresh", (req, res) => {
@@ -191,8 +252,37 @@ app.post("/refresh", (req, res) => {
 
       .then(function (response) {
         logger.info(response.data);
-        res.json(response.data);
+
+        // get user info
+        pool.query(
+          "SELECT * FROM user WHERE account_guid = ?",
+          [parseJwt(refreshToken).account_guid],
+          (err, data) => {
+            if (err) {
+              logger.error(err);
+              res.status(401).json({ status: -1 });
+              return;
+            }
+
+            if (data.length < 0) {
+              // username does not exist
+              res.status(501).json({ status: -2 });
+              return;
+            }
+
+            res.json({
+              ...response.data,
+              user: {
+                email: data[0].email,
+                firstName: data[0].first,
+                lastName: data[0].last,
+                dateOfBirth: data[0].dateOfBirth
+              }
+            });
+          }
+        );
       })
+
       .catch(function (error) {
         logger.info(error);
         res.status(500).json({ status: -1 });
@@ -239,7 +329,7 @@ app.get("/fetch", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.json({ "repo": "https://github.com/ryanmichaelcurry/group1" });
+  res.json({ repo: "https://github.com/ryanmichaelcurry/group1" });
 });
 
 /* Server */

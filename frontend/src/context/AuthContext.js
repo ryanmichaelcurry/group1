@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
           return {
             ...prevState,
             userToken: action.token,
+            user: action.user,
             isLoading: false,
           };
         case "SIGN_IN":
@@ -19,12 +20,14 @@ export function AuthProvider({ children }) {
             ...prevState,
             isSignout: false,
             userToken: action.token,
+            user: action.user,
           };
         case "SIGN_OUT":
           return {
             ...prevState,
             isSignout: true,
             userToken: null,
+            user: null,
           };
       }
     },
@@ -32,6 +35,7 @@ export function AuthProvider({ children }) {
       isLoading: true,
       isSignout: false,
       userToken: null,
+      user: null,
     }
   );
 
@@ -40,10 +44,10 @@ export function AuthProvider({ children }) {
     const bootstrapAsync = () => {
       try {
         // Restore token stored in `SecureStore` or any other encrypted storage
-        accessToken = secureLocalStorage.getItem("accessToken");
-        refreshToken = secureLocalStorage.getItem("refreshToken");
+        // accessToken = secureLocalStorage.getItem("accessToken");
+        // refreshToken = secureLocalStorage.getItem("refreshToken");
       } catch (e) {
-        console.log("error in retrieval");
+        console.log("error in retrieval", e);
         dispatch({ type: "RESTORE_TOKEN", token: null });
       }
 
@@ -73,6 +77,7 @@ export function AuthProvider({ children }) {
           dispatch({
             type: "RESTORE_TOKEN",
             token: data.accessToken,
+            user: data.user
           });
         })
 
@@ -88,7 +93,7 @@ export function AuthProvider({ children }) {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (data) => {
+      signIn: (data) => {
         // In a production app, we need to send some data (usually username, password) to server and get a token
         // We will also need to handle errors if sign in failed
         // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
@@ -107,38 +112,40 @@ export function AuthProvider({ children }) {
           body: JSON.stringify(payload),
         };
 
-        fetch("https://legalpaperweights.contrivesoftware.com/login", options)
+        fetch("https://api.legalpaperweights.contrivesoftware.com/login", options)
           .then((result) => {
             if (result.status != 200) {
               throw new Error("Bad Response");
             }
             return result.text();
           })
-          .then(async (data) => {
+          .then((data) => {
             // Convert to an Object
             data = JSON.parse(data);
+            console.log("LOGIN", data);
 
             // SecureStore
-            await secureLocalStorage.setItem("accessToken", data.accessToken);
-            await secureLocalStorage.setItem("refreshToken", data.refreshToken);
+            secureLocalStorage.setItem("accessToken", data.accessToken);
+            secureLocalStorage.setItem("refreshToken", data.refreshToken);
 
             dispatch({
               type: "SIGN_IN",
-              token: data.accessToken
+              token: data.accessToken,
+              user: data.user
             });
           })
           .catch((error) => {
             console.log(error);
           });
       },
-      signOut: async () => {
+      signOut: () => {
         // Remove SecureStore Tokens
-        await SecureStore.deleteItemAsync("refreshToken");
-        await SecureStore.deleteItemAsync("accessToken");
+        secureLocalStorage.removeItem("refreshToken");
+        secureLocalStorage.removeItem("accessToken");
 
         dispatch({ type: "SIGN_OUT" });
       },
-      signUp: async (data) => {
+      signUp: (data) => {
         // In a production app, we need to send user data to server and get a token
         // We will also need to handle errors if sign up failed
         // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
@@ -158,7 +165,7 @@ export function AuthProvider({ children }) {
           body: JSON.stringify(payload),
         };
 
-        fetch("https://legalpaperweights.contrivesoftware.com/register", options)
+        fetch("https://api.legalpaperweights.contrivesoftware.com/register", options)
           .then((result) => {
             if (result.status != 200) {
               throw new Error("Bad Response");
