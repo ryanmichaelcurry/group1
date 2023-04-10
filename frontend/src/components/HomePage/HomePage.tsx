@@ -1,26 +1,37 @@
 import Head from 'next/head';
-import { NumberInput, Autocomplete, Container, Grid, SimpleGrid, Skeleton, useMantineTheme, rem, Card, Image, Text, Badge, Button, Group } from '@mantine/core';
-import { CATEGORIES } from '../../data';
-import { Banner } from './Banner/Banner';
-import { CategoriesList } from './CategoriesList/CategoriesList';
-import { NavLink } from '@mantine/core';
-import React from 'react';
+import { NumberInput, Autocomplete, Container, Grid, useMantineTheme, Card, Image, Text, Badge, Button, Group } from '@mantine/core';
 import { IconSearch } from '@tabler/icons-react';
 import { Filter } from 'tabler-icons-react';
 import { useState } from "react";
-import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
+import React, { useContext, useEffect, Component } from 'react';
+import UserContextProvider, { UserContext } from '../../pages/component/UserContext';
+import {useSessionStorage} from  '../../pages/component/loadUserContext.js';
+
+
 
 interface HomePageProps {
     componentsCountByCategory: Record<string, number>;
 }
 
+
+
 export function HomePage() {
 
-    const loggedInUserId = Cookies.get('loggedInUser');
+    // gets current user session info. If not logged in, redirect to login
+    var loggedInUser;
+    if (typeof window !== 'undefined') {
+        
+        const router = useRouter();
 
-    <Route exact path="/">
-        {loggedIn ? <Redirect to="/dashboard" /> : <PublicHomePage />}
-    </Route>
+        // see if user is logged in. If not, redirect to login page
+        const retrieveUserStr = sessionStorage.getItem('loggedInUser') != null ? sessionStorage.getItem('loggedInUser') : '{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}';
+        loggedInUser = JSON.parse(retrieveUserStr);
+        
+        if (loggedInUser.user_id == 0) router.push('/login');
+
+    }
+    
 
     const theme = useMantineTheme();
    
@@ -110,79 +121,85 @@ export function HomePage() {
 
     return (
         <>
-            <Head>
-                <title>Mantine UI</title>
-            </Head>
+                <div>
+                    <Head>
+                    <title>LegalPaperweights</title>
+                </Head>
 
-            <div id="main">
-                <Container my="sm">
-                    <Autocomplete
-                        placeholder="Search the Store"
-                        icon={<IconSearch size="1rem" stroke={1.5} />}
-                        data={['pARperweight-15', 'Big N Heavy', 'Big and Blue',]}
-                        onChange={handleChange}
-                        value={state.query}
-                    />
+                <div id="main">
+                    <Container my="sm">
+                        <h2>
+                            Welcome back, {loggedInUser.first} {loggedInUser.last}
+                        </h2>
+                        <Autocomplete
+                            placeholder="Search the Store"
+                            icon={<IconSearch size="1rem" stroke={1.5} />}
+                            data={['pARperweight-15', 'Big N Heavy', 'Big and Blue',]}
+                            onChange={handleChange}
+                            value={state.query}
+                        />
       
-                    <hr/>
+                        <hr/>
                     
-                    <Grid grow>
-                        {(state.list.map(ProductData => {
+                        <Grid grow>
+                            {(state.list.map(ProductData => {
                             
 
-                            return<Grid.Col span={4}>
-                                <Card shadow="sm" padding="lg" radius="md" withBorder>
-                                    <Card.Section>
-                                        <Image
-                                            src={ProductData.image_url}
+                                return<Grid.Col span={4}>
+                                    <Card shadow="sm" padding="lg" radius="md" withBorder>
+                                        <Card.Section>
+                                            <Image
+                                                src={ProductData.image_url}
 
-                                            fit="contain"
-                                            alt={ProductData.title}
-                                        />
-                                    </Card.Section>
+                                                fit="contain"
+                                                alt={ProductData.title}
+                                            />
+                                        </Card.Section>
 
-                                    <Group position="apart" mt="md" mb="xs">
-                                        <Text weight={500}>{ProductData.title}</Text>
-                                        <Group position="right">
-                                            <Badge color="pink" variant="light">
-                                                QTY: {ProductData.quantity}
-                                            </Badge>
-                                            <Badge color="pink" variant="light">
-                                                ${ProductData.price}
-                                            </Badge>
+                                        <Group position="apart" mt="md" mb="xs">
+                                            <Text weight={500}>{ProductData.title}</Text>
+                                            <Group position="right">
+                                                <Badge color="pink" variant="light">
+                                                    QTY: {ProductData.quantity}
+                                                </Badge>
+                                                <Badge color="pink" variant="light">
+                                                    ${ProductData.price}
+                                                </Badge>
+                                            </Group>
                                         </Group>
-                                    </Group>
 
-                                    <Text size="sm" color="dimmed">
-                                        {ProductData.description}
-                                    </Text>
+                                        <Text size="sm" color="dimmed">
+                                            {ProductData.description}
+                                        </Text>
 
-                                    <Group spacing="xs" noWrap={true}>
-                                        <NumberInput
-                                            id="ref"
-                                            defaultValue={1}
-                                            min={1}
-                                            max={ProductData.quantity}
-                                            placeholder="QTY"
-                                            label="Amount"
-                                            withAsterisk
+                                        <Group spacing="xs" noWrap={true}>
+                                            <NumberInput
+                                                id="ref"
+                                                defaultValue={1}
+                                                min={1}
+                                                max={ProductData.quantity}
+                                                placeholder="QTY"
+                                                label="Amount"
+                                                withAsterisk
 
 
-                                        />
-                                        <Button onClick={addToCart} variant="light" color="blue" fullWidth mt="md" radius="md">
-                                            Add to Cart
-                                        </Button>
-                                    </Group>
-                                    </Card>
-                                    </Grid.Col>
+                                            />
+                                            <Button onClick={addToCart} variant="light" color="blue" fullWidth mt="md" radius="md">
+                                                Add to Cart
+                                            </Button>
+                                        </Group>
+                                        </Card>
+                                        </Grid.Col>
                             
-                        }))}
-                        </Grid>
+                            }))}
+                            </Grid>
                     
-                    {/*<Grid grow>{grid}</Grid>*/}
-                </Container>
+           
+                    </Container>
 
-            </div>
+                    </div>
+                </div>
+            
         </>
     );
 }
