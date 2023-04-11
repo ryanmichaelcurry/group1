@@ -1,6 +1,5 @@
 import { useToggle, upperFirst } from '@mantine/hooks';
 import { useForm } from '@mantine/form';
-import React, { useState, useContext } from 'react';
 import { DatePickerInput } from '@mantine/dates';
 import {
   TextInput,
@@ -39,25 +38,15 @@ export function AuthenticationForm() {
   const [terms, setTerms] = useState(false);
 
   const [type, toggle] = useToggle(['login', 'register']);
-  const form = useForm({
-    initialValues: {
-      email: '',
-      firstName: '',
-      lastName: '',
-      password: '',
-      dateOfBirth: '2000 09 12',
-      terms: true,
-    },
 
-    validate: {
-      email: (val) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
-    },
-  });
 
-  if (state.userToken != null) {
-    router.push('/home'); // redirect to home page
-  }
+  const validate = {
+      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
+      password: (val: string) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+    }
+  ;
+
+
 
   return (
     <Container
@@ -100,7 +89,7 @@ export function AuthenticationForm() {
           placeholder="totallyLegal@gmail.com"
           value={email}
           onChange={(event) => setEmail(event.currentTarget.value)}
-          error={form.errors.email && 'Invalid email'}
+          error={validate.email(email) && 'Invalid email'}
           radius="md"
         />
         {type === 'register' && (
@@ -122,7 +111,7 @@ export function AuthenticationForm() {
           placeholder="Your password"
           value={password}
           onChange={(event) => setPassword(event.currentTarget.value)}
-          error={form.errors.password && 'Password should include at least 6 characters'}
+          error={validate.password(password) && 'Password should include at least 6 characters'}
           radius="md"
         />
 
