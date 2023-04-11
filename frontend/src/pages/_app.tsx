@@ -4,7 +4,6 @@ import { Layout } from '../components/Layout/Layout';
 import favicon from '../public/favicon.svg';
 import '../fonts/GreycliffCF/styles.css';
 import { useRouter } from 'next/router';
-import UserContextProvider from './component/UserContext';
 
 import React, { createContext, useContext, useEffect } from 'react';
 import { ApiContext, ApiProvider } from '../context/ApiContext';
@@ -29,7 +28,7 @@ export function AuthFlow(props: AppProps) {
     }
   }, [state]);
 
-  if(!state.isLoading) {
+  if (!state.isLoading) {
     return (
       <Layout
         noHeader={props.router.pathname === '/component/[component]'}
@@ -38,12 +37,12 @@ export function AuthFlow(props: AppProps) {
         <Component {...pageProps} />{' '}
       </Layout>
     );
+  } else {
+    return <h1>Loading...</h1>;
   }
 }
 
 export default function App(props: AppProps) {
-  const { Component, pageProps } = props;
-
   return (
     <AuthProvider>
       <ApiProvider>
@@ -53,9 +52,7 @@ export default function App(props: AppProps) {
           <link rel="icon" href={favicon.src} />
         </Head>
 
-
-          <AuthFlow {...props} />
-
+        <AuthFlow {...props} />
       </ApiProvider>
     </AuthProvider>
   );
