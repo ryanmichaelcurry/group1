@@ -3,9 +3,13 @@
     "",
     "\\frontend",
     "\\frontend\\src",
-    "\\frontend\\src\\pages",
-    "\\frontend\\src\\pages\\component"
+    "\\frontend\\src\\components",
+    "\\frontend\\src\\components\\HomePage",
+    "\\frontend\\src\\components\\Layout",
+    "\\frontend\\src\\components\\Layout\\Header",
+    "\\frontend\\src\\context",
+    "\\frontend\\src\\pages"
   ],
-  "SelectedNode": "\\frontend\\src\\pages\\component\\loadUserContext.js",
+  "SelectedNode": "\\frontend\\src\\components\\HomePage\\HomePage.tsx",
   "PreviewInSolutionExplorer": false
 }

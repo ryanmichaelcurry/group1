@@ -8,6 +8,8 @@ import useStyles from './Header.styles';
 import logo from '../../../data/images/logo-no-background.png';
 import { ShoppingCart, User } from 'tabler-icons-react';
 import { IconSearch, IconSettings, IconDoorExit } from '@tabler/icons-react';
+import { ApiContext } from '../../../context/ApiContext';
+import { AuthContext } from '../../../context/AuthContext';
 
 
 
@@ -25,14 +27,13 @@ export function Header({ toggleDir, dir }: HeaderProps) {
     const router = useRouter();
 
     // gets current user session info. If not logged in, redirect to login
-    var loggedInUser;
+    
     if (typeof window !== 'undefined') {
 
         
 
-        // see if user is logged in. Store info if so
-        const retrieveUserStr = sessionStorage.getItem('loggedInUser') != null ? sessionStorage.getItem('loggedInUser') : '{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}';
-        loggedInUser = JSON.parse(retrieveUserStr);
+      : '{"user_id": 0, "first": "null", "last": "null", "status": "buyer"}';
+        
 
     }
 
