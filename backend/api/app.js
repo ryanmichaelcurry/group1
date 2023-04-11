@@ -43,7 +43,7 @@ var pool = mysql.createPool({
 /* Registration */
 
 app.post("/register", (req, res) => {
-  logger.info(process.env.AUTH_API + "/register");
+  logger.info("/register", req.body.email);
   try {
     // Declare variables from request
 
@@ -61,6 +61,7 @@ app.post("/register", (req, res) => {
 
     if (!terms) {
       res.status(401).json({ status: -1 });
+      logger.error("terms of service");
       return;
     }
 
@@ -78,6 +79,7 @@ app.post("/register", (req, res) => {
 
         if (data.length > 0) {
           // username already exits
+          logger.error("user already exists");
           res.status(501).json({ status: -2 });
           return;
         }

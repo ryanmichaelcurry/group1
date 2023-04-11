@@ -45,7 +45,7 @@ export function Header({ toggleDir, dir }: HeaderProps) {
                   <Menu.Item icon={<IconSettings size={14} />}>View Profile</Menu.Item>
                 </Link>
 
-                <Menu.Item color="red" onClick={signOut()} icon={<IconDoorExit size={14} />}>
+                <Menu.Item color="red" onClick={()=> {signOut()}} icon={<IconDoorExit size={14} />}>
                   Log Out
                 </Menu.Item>
               </Menu.Dropdown>

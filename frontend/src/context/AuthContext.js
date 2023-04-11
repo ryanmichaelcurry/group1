@@ -150,11 +150,7 @@ export function AuthProvider({ children }) {
         // We will also need to handle errors if sign up failed
         // After getting token, we need to persist the token using `SecureStore` or any other encrypted storage
 
-        const payload = {
-          username: data.username,
-          email: data.email,
-          password: data.password,
-        };
+        const payload = data;
 
         const options = {
           method: "POST",
