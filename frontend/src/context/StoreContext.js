@@ -16,7 +16,12 @@ export const StoreProvider = ({ children }) => {
     },
   ]);
 
-  const [cart, setCart] = useState([{ cart_id: 0, cart_num_items: 0 }]);
+    const [cart, setCart] = useState([{ cart_id: 0, cart_num_items: 0, checkout: false, item_ids: [], item_quantities: [] }]);
+
+
+
+
+
 
   return <StoreContext.Provider value={{ cart, products, setProducts, setCart }}>{children}</StoreContext.Provider>;
 };
