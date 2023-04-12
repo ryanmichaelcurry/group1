@@ -1,4 +1,4 @@
-﻿import { Container, Menu, Center, RemoveScroll, Group, Button } from '@mantine/core';
+﻿import { Container, Menu, Center, RemoveScroll, Group, Button, Indicator } from '@mantine/core';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
@@ -10,6 +10,7 @@ import { ShoppingCart, User } from 'tabler-icons-react';
 import { IconSearch, IconSettings, IconDoorExit } from '@tabler/icons-react';
 
 import { AuthContext } from '../../../context/AuthContext';
+import { StoreContext } from '../../../context/StoreContext';
 
 interface HeaderProps {
   toggleDir(): void;
@@ -17,8 +18,11 @@ interface HeaderProps {
 }
 
 export function Header({ toggleDir, dir }: HeaderProps) {
-  const { state, signOut } = useContext(AuthContext);
-  const { classes, cx } = useStyles();
+    const { state, signOut } = useContext(AuthContext);
+
+    const { classes, cx } = useStyles();
+    var { cart } = useContext(StoreContext);
+    console.log("cart from header: ", cart);
 
   // router is used to determine what the pathname is.
   const router = useRouter();
@@ -31,7 +35,7 @@ export function Header({ toggleDir, dir }: HeaderProps) {
             <Image src={logo} className="logo" alt="Logo" height={35} width={230} />
           </Link>
         </Center>
-
+              <Button onClick= {() => console.log(cart)}> Cart</Button>
         {/* if pathname is login, dont show cart of profile*/}
         {router.pathname !== '/login' ? (
           <Group position="right">
@@ -51,8 +55,14 @@ export function Header({ toggleDir, dir }: HeaderProps) {
               </Menu.Dropdown>
             </Menu>
 
-            <Link href="/Cart" passHref>
-              <Button leftIcon={<ShoppingCart />} variant="white"></Button>
+                      <Link href="/Cart" passHref>
+                          
+                          <Button leftIcon={
+                              <Indicator label={cart[0].cart_num_items } >
+                                  <ShoppingCart />
+                              </Indicator>
+                          } variant="white"></Button>
+                              
             </Link>
           </Group>
         ) : (

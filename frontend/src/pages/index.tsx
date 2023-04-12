@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import React, { useContext, useEffect, Component } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { AuthContext } from '../context/AuthContext';
+import { StoreContext } from '../context/StoreContext';
 
 interface HomePageProps {
   componentsCountByCategory: Record<string, number>;
@@ -26,7 +27,8 @@ interface HomePageProps {
 
 export default function HomePage() {
   // gets current user session info. If not logged in, redirect to login
-  const { state } = useContext(AuthContext);
+    const { state } = useContext(AuthContext);
+    var { cart, setCart } = useContext(StoreContext);
 
   const theme = useMantineTheme();
 
@@ -90,7 +92,14 @@ export default function HomePage() {
   function addToCart() {
     // this function is called when user clicks add to cart
     // this should add this item to their cart of given qty, and subtract that from available product
-    console.log();
+      let updatedVal = {};
+      updatedVal = { "cart_num_items": cart[0].cart_num_items++ };
+      setCart(cart => ({
+          ...cart,
+          ...updatedVal
+      }))
+      
+    console.log(cart);
   }
 
   // this is used for product search filtering
