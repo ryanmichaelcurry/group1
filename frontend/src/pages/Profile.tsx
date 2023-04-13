@@ -72,11 +72,15 @@ export function ProfilePage() {
           required
         />
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(event) => setItemData({ ...itemData, image: event.target.files[0] })}
+        <TextInput
+          label="URL"
+          placeholder="Enter URL"
+          value={itemData.url}
+          onChange={(event) => setItemData({ ...itemData, url: event.target.value })}
+          type="url"
+          required
         />
+
 
         <Button variant="outline" onClick={handleUpload} style={{ marginTop: 16 }}>
           Upload
