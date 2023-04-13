@@ -28,25 +28,47 @@ import { AuthContext } from '../context/AuthContext';
 export function AuthenticationForm() {
   const router = useRouter();
 
-  const { signIn, signUp, state } = useContext(AuthContext);
+  const { signIn, signUp, state, dispatch } = useContext(AuthContext);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-  const [terms, setTerms] = useState(false);
+    const [terms, setTerms] = useState(false);
 
-  const [type, toggle] = useToggle(['login', 'register']);
+    const [response, setResponse] = useState('');
+
+    const [type, toggle] = useToggle(['login', 'register']);
+    const [errorBool, toggleError] = useToggle([false, true]);
+    const [recError, setError] = useState(false);
 
 
-  const validate = {
-      email: (val: string) => (/^\S+@\S+$/.test(val) ? null : 'Invalid email'),
-      password: (val: string) => (val.length <= 6 ? 'Password should include at least 6 characters' : null),
+    const validate = {
+        email: (val: string) => ((/^\S+@\S+$/.test(val) || val == '' )? null : 'Invalid email'),
+        password: (val: string) => (val.length >= 6 || val == '' ? null : 'Password should include at least 6 characters'),
     }
   ;
+    
+    
+    let errMsg;
+    if (errorBool && !state.isLoading && state.user == null) {
+        
+        errMsg = type !== 'register'
+            ? <Text color="red">Error Logging In. Check your credentials and try again.</Text>
+            : <Text color="red">Error Registering. Already have an account? Log in.</Text>
+    }
+    else {
+        errMsg = '';
+    }
 
+    
 
+    function changeType() {
+        toggle();
+        if (errorBool) toggleError();
+
+    }
 
   return (
     <Container
@@ -59,7 +81,7 @@ export function AuthenticationForm() {
       </Text>
 
       <Divider label="Login or Register Below" labelPosition="center" my="lg" />
-
+          
       <Stack>
         {type === 'register' && (
           <TextInput
@@ -125,27 +147,35 @@ export function AuthenticationForm() {
       </Stack>
 
       <Group position="apart" mt="xl">
-        <Anchor component="button" type="button" color="dimmed" onClick={() => toggle()} size="xs">
+              <Anchor component="button" type="button" color="dimmed" onClick={() => changeType()} size="xs">
           {type === 'register'
             ? 'Already have an account? Login'
             : "Don't have an account? Register"}
         </Anchor>
-
+              {errMsg}
+              
         <Button
           type="submit"
           radius="xl"
           onClick={() => {
             if (type == 'login') {
-              signIn({ email, password });
+                setResponse(signIn({ email, password }));
+                
+                if (state.userToken == null && !errorBool) toggleError();
+                
             } else {
-              signUp({ email, password, firstName, lastName, terms, dateOfBirth });
+                signUp({ email, password, firstName, lastName, terms, dateOfBirth });
+
+                if (state.userToken == null && !errorBool) toggleError();
             }
           }}
         >
           {upperFirst(type)}
         </Button>
-      </Group>
-    </Container>
+          </Group>
+          
+      </Container>
+      
   );
 
 }

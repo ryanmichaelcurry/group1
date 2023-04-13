@@ -5,11 +5,13 @@
     "\\frontend\\src",
     "\\frontend\\src\\components",
     "\\frontend\\src\\components\\HomePage",
+    "\\frontend\\src\\components\\HomePage\\CategoryCard",
     "\\frontend\\src\\components\\Layout",
     "\\frontend\\src\\components\\Layout\\Header",
     "\\frontend\\src\\context",
-    "\\frontend\\src\\pages"
+    "\\frontend\\src\\pages",
+    "\\frontend\\src\\public"
   ],
-  "SelectedNode": "\\frontend\\src\\components\\HomePage\\HomePage.tsx",
+  "SelectedNode": "\\frontend\\src\\context\\StoreContext.js",
   "PreviewInSolutionExplorer": false
 }

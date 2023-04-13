@@ -7,8 +7,13 @@ export const StoreProvider = ({ children }) => {
   const { send } = useContext(ApiContext);
 
   const [inventory, setInventory] = useState([]);
-  const [cart, setCart] = useState([]);
   const [earnings, setEarnings] = useState([]);
+  const [cart, setCart] = useState([{ cart_id: 0, cart_num_items: 0, checkout: false, item_ids: [], item_quantities: [] }]);
+
+
+
+
+
 
   useEffect(async () => {
     let response = await send("GET:/inventory");

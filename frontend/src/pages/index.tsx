@@ -114,10 +114,17 @@ export default function HomePage() {
     },
   ];
 
-  function addToCart() {
+  function addToCart(invId: number, qty: number) {
     // this function is called when user clicks add to cart
     // this should add this item to their cart of given qty, and subtract that from available product
-    console.log();
+      let updatedVal = {};
+      updatedVal = {"cart_num_items": cart[0].cart_num_items = cart[0].cart_num_items + qty };
+      setCart(cart => ({
+          ...cart,
+          ...updatedVal
+      }))
+      
+    console.log(cart);
   }
 
   return (
@@ -171,14 +178,15 @@ export default function HomePage() {
                         <NumberInput
                           id="ref"
                           defaultValue={1}
-                          min={1}
+                                    min={1}
+                                    
                           max={ProductData.quantity}
                           placeholder="QTY"
                           label="Amount"
                           withAsterisk
                         />
                         <Button
-                          onClick={addToCart}
+                          onClick={()=>addToCart(ProductData.inventory_id, 1 )}  // replace 1 with qty selected
                           variant="light"
                           color="blue"
                           fullWidth
