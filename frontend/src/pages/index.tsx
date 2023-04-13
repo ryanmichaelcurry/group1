@@ -27,6 +27,7 @@ interface HomePageProps {
 
 export default function HomePage() {
   // gets current user session info. If not logged in, redirect to login
+
   const { state } = useContext(AuthContext);
   const { inventory } = useContext(StoreContext);
 
@@ -53,6 +54,12 @@ export default function HomePage() {
     setProducts({query: products.query, list: inventory});
   }, [inventory]);
   
+
+    
+    var { cart, setCart, increaseCartQuantity } = useContext(StoreContext);
+
+    
+
 
   const theme = useMantineTheme();
 
@@ -112,19 +119,21 @@ export default function HomePage() {
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_DPp9vYqBV0uUITcNMM-YrOFPUyjUzGZUExXJiphHvT0iEmXXi74T7Dd7brSJyE1S1MU&usqp=CAU',
       price: 21.0,
     },
-  ];
+    ];
 
-  function addToCart(invId: number, qty: number) {
+    const qtySelections = new Array(ProductData.length);
+    for (let i = 0; i < qtySelections.length; i++) {
+        qtySelections[i] = 1;
+    }
+
+    
+
+     
+
+  function addToCart(invId: number, index: number) {
     // this function is called when user clicks add to cart
-    // this should add this item to their cart of given qty, and subtract that from available product
-      let updatedVal = {};
-      updatedVal = {"cart_num_items": cart[0].cart_num_items = cart[0].cart_num_items + qty };
-      setCart(cart => ({
-          ...cart,
-          ...updatedVal
-      }))
-      
-    console.log(cart);
+    // this should add this item to their cart of given qty, and subtract that from available product     
+      increaseCartQuantity(invId, qtySelections[index]);
   }
 
   return (
@@ -150,8 +159,11 @@ export default function HomePage() {
             <hr />
 
             <Grid grow>
+
               {products.list.map((ProductData: any) => {
                 return (
+
+
                   <Grid.Col span={4}>
                     <Card shadow="sm" padding="lg" radius="md" withBorder>
                       <Card.Section>
@@ -179,14 +191,15 @@ export default function HomePage() {
                           id="ref"
                           defaultValue={1}
                                     min={1}
-                                    
+                                      onChange={(val)=>qtySelections[index]=val}
                           max={ProductData.quantity}
-                          placeholder="QTY"
+                                    placeholder="QTY"
+                                    
                           label="Amount"
                           withAsterisk
                         />
                         <Button
-                          onClick={()=>addToCart(ProductData.inventory_id, 1 )}  // replace 1 with qty selected
+                          onClick={()=>addToCart(ProductData.inventory_id, index )}  
                           variant="light"
                           color="blue"
                           fullWidth
