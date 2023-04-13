@@ -129,8 +129,8 @@ app.post("/register", (req, res) => {
                         email,
                         firstName: first,
                         lastName: last,
-                        dateOfBirth
-                      }
+                        dateOfBirth,
+                      },
                     });
                   })
                   .catch(function (error) {
@@ -208,8 +208,8 @@ app.post("/login", (req, res) => {
                 email: data[0].email,
                 firstName: data[0].first,
                 lastName: data[0].last,
-                dateOfBirth: data[0].dateOfBirth
-              }
+                dateOfBirth: data[0].dateOfBirth,
+              },
             });
           }
         );
@@ -225,7 +225,7 @@ app.post("/login", (req, res) => {
 
 const parseJwt = (token) => {
   try {
-    return JSON.parse(atob(token.split('.')[1]));
+    return JSON.parse(atob(token.split(".")[1]));
   } catch (e) {
     return null;
   }
@@ -278,8 +278,8 @@ app.post("/refresh", (req, res) => {
                 email: data[0].email,
                 firstName: data[0].first,
                 lastName: data[0].last,
-                dateOfBirth: data[0].dateOfBirth
-              }
+                dateOfBirth: data[0].dateOfBirth,
+              },
             });
           }
         );
@@ -299,6 +299,187 @@ app.post("/refresh", (req, res) => {
   Group 01 E-commerce API
 
 */
+
+app.get("/inventory", (req, res) => {
+  
+
+  try {
+    pool.query(
+      "SELECT * FROM `inventory`",
+      [],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        res.json({ inventory: data }); // send inventory to user
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+
+});
+
+app.get("/cart", (req, res) => {
+  // JWT verify
+
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    pool.query(
+      "SELECT * FROM `cart` WHERE account_guid = ? AND checkout = 0",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        if(typeof data[0] === 'undefined') {
+          res.json({ cart: [] }); // send empty cart to user
+          return;
+        }
+
+        const cart_id = typeof data[0].cart_id;
+
+        pool.query(
+          "SELECT item.item_id, item.inventory_id, item.quantity FROM item INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE item.cart_id = ?",
+          [account_guid],
+          (err, data) => {
+            if (err) {
+              console.error(err);
+              res.status(401).json({ status: -1 });
+              return;
+            }
+
+            res.json({ cart: data }); // send cart to user
+
+          }
+        );
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+
+});
+
+app.get("/earnings", (req, res) => {
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    pool.query(
+      "SELECT user.earnings FROM user WHERE user.account_guid = ?",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        res.json({ earnings: data[0].earnings });
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
+
+app.post("/cart", (req, res) => {
+  // JWT verify
+
+  const item = req.body.item;
+
+  // TODO: find cart of user
+
+  // TODO: if no cart exists (or one that has not been checkedout), create one
+
+  // TODO: save cart ID
+
+  // TODO: insert into item (add cart ID)
+
+  // TODO: get ALL items in cart
+
+  // TODO: return cart
+});
+
+app.post("/checkout", (req, res) => {
+  // JWT verify
+
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    // Get the user's information
+
+    pool.query(
+      "SELECT * FROM `user` WHERE account_guid = ?",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        const user = data[0];
+
+        // Get the active cart
+        pool.query(
+          "SELECT * FROM `cart` WHERE account_guid = ? AND checkout = 0",
+          [account_guid],
+          (err, data) => {
+            if (err) {
+              console.error(err);
+              res.status(401).json({ status: -1 });
+              return;
+            }
+
+            const cart = data[0];
+
+            // Get each item in the cart
+            pool.query(
+              "SELECT * FROM `item` WHERE cart_id = ?",
+              [cart.cart_id],
+              (err, data) => {
+                if (err) {
+                  console.error(err);
+                  res.status(401).json({ status: -1 });
+                  return;
+                }
+                const items = data;
+              }
+            );
+          }
+        );
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
 
 /* View Logs */
 app.get("/logs", (request, response) => {

@@ -23,19 +23,23 @@ export function AuthFlow(props: AppProps) {
   console.log('isUserAuthenticated', isUserAuthenticated);
 
   if (!isUserAuthenticated && !isLoginPage) {
-    console.log('/login');
     router.replace('/login');
+    return <h1>Loading...</h1>;
   } else if (isLoginPage && isUserAuthenticated) {
     router.replace('/');
   }
+  
+  // else: let them pass!
 
   return (
-    <Layout
-      noHeader={props.router.pathname === '/component/[component]'}
-      data={props.pageProps.allComponents}
-    >
-      <Component {...pageProps} />{' '}
-    </Layout>
+    <StoreProvider>
+      <Layout
+        noHeader={props.router.pathname === '/component/[component]'}
+        data={props.pageProps.allComponents}
+      >
+        <Component {...pageProps} />{' '}
+      </Layout>
+    </StoreProvider>
   );
 }
 
@@ -54,16 +58,14 @@ export default function App(props: AppProps) {
   return (
     <AuthProvider>
       <ApiProvider>
-        <StoreProvider>
-          <Head>
-            <title>Legal Paperweights</title>
-            <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
-            <link rel="icon" href={favicon.src} />
-          </Head>
-          <ProtectRoute>
-            <AuthFlow {...props} />
-          </ProtectRoute>
-        </StoreProvider>
+        <Head>
+          <title>Legal Paperweights</title>
+          <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+          <link rel="icon" href={favicon.src} />
+        </Head>
+        <ProtectRoute>
+          <AuthFlow {...props} />
+        </ProtectRoute>
       </ApiProvider>
     </AuthProvider>
   );
