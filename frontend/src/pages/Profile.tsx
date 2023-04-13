@@ -7,10 +7,11 @@ export function ProfilePage() {
   const { state } = useContext(AuthContext);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [itemData, setItemData] = useState({
-    name: '',
+    title: '',
     description: '',
     price: '',
-    image: null,
+    quantity: '',
+    image_url: '',
   });
 
   const handleUpload = async () => {
@@ -18,10 +19,11 @@ export function ProfilePage() {
     if (response.success) {
       setShowUploadModal(false);
       setItemData({
-        name: '',
+        title: '',
         description: '',
         price: '',
-        image: null,
+        quantity: '',
+        image_url: '',
       });
     }
   };
@@ -47,10 +49,10 @@ export function ProfilePage() {
         padding="sm"
       >
         <TextInput
-          label="Name"
-          placeholder="Enter item name"
-          value={itemData.name}
-          onChange={(event) => setItemData({ ...itemData, name: event.target.value })}
+          label="Title"
+          placeholder="Enter item title"
+          value={itemData.title}
+          onChange={(event) => setItemData({ ...itemData, title: event.target.value })}
           required
         />
 
@@ -73,10 +75,20 @@ export function ProfilePage() {
         />
 
         <TextInput
+          label="Quantity"
+          placeholder="Enter the amount of items"
+          type="number"
+          min={0}
+          value={itemData.quantity}
+          onChange={(event) => setItemData({ ...itemData, quantity: event.target.value })}
+          required
+        />
+
+        <TextInput
           label="URL"
           placeholder="Enter URL"
-          value={itemData.url}
-          onChange={(event) => setItemData({ ...itemData, url: event.target.value })}
+          value={itemData.image_url}
+          onChange={(event) => setItemData({ ...itemData, image_url: event.target.value })}
           type="url"
           required
         />
