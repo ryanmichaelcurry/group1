@@ -5,6 +5,8 @@ import  secureLocalStorage  from  "react-secure-storage";
 
 export const ApiContext = createContext();
 
+const host = "https://api.legalpaperweights.contrivesoftware.com";
+
 export const ApiProvider = ({ children }) => {
   const [connected, setConected] = useState(false);
   const [socket, setSocket] = useState(null);

@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import React, { useContext, useEffect, Component } from 'react';
 import { ApiContext } from '../context/ApiContext';
 import { AuthContext } from '../context/AuthContext';
+import { StoreContext } from '../context/StoreContext';
 
 interface HomePageProps {
   componentsCountByCategory: Record<string, number>;
@@ -27,12 +28,38 @@ interface HomePageProps {
 export default function HomePage() {
   // gets current user session info. If not logged in, redirect to login
   const { state } = useContext(AuthContext);
+  const { inventory } = useContext(StoreContext);
+
+  // this is used for product search filtering
+  const [products, setProducts] = useState({
+    query: '',
+    list: inventory,
+  });
+  const handleChange = (e) => {
+    const results = ProductData.filter((thisData) => {
+      if (e === '') return ProductData;
+      return (
+        thisData.title.toLowerCase().includes(e.toLowerCase()) ||
+        thisData.description.toLowerCase().includes(e.toLowerCase())
+      );
+    });
+    setProducts({
+      query: e,
+      list: results,
+    });
+  };
+
+  useEffect(() => {
+    setProducts({query: products.query, list: inventory});
+  }, [inventory]);
+  
 
   const theme = useMantineTheme();
 
-  if (state.userToken == null) {
+  if (typeof state.user.firstName === "undefined") {
     return;
   }
+
 
   // below is the product data we pull in. Sample data is there right now
   var ProductData = [
@@ -93,25 +120,6 @@ export default function HomePage() {
     console.log();
   }
 
-  // this is used for product search filtering
-  const [products, setstate] = useState({
-    query: '',
-    list: ProductData,
-  });
-  const handleChange = (e) => {
-    const results = ProductData.filter((thisData) => {
-      if (e === '') return ProductData;
-      return (
-        thisData.title.toLowerCase().includes(e.toLowerCase()) ||
-        thisData.description.toLowerCase().includes(e.toLowerCase())
-      );
-    });
-    setstate({
-      query: e,
-      list: results,
-    });
-  };
-
   return (
     <>
       <div>
@@ -135,7 +143,7 @@ export default function HomePage() {
             <hr />
 
             <Grid grow>
-              {products.list.map((ProductData) => {
+              {products.list.map((ProductData: any) => {
                 return (
                   <Grid.Col span={4}>
                     <Card shadow="sm" padding="lg" radius="md" withBorder>

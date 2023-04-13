@@ -1,22 +1,26 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState, useContext } from 'react';
+import { ApiContext } from './ApiContext';
 
 export const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-  const [products, setProducts] = useState([
-    {
-      inventory_id: 12345,
-      title: 'Vibrant Blue Flowers',
-      quantity: 12,
-      created_at: '4/3/2023',
-      description: 'Great, like new',
-      image_url:
-        'https://images.unsplash.com/photo-1677678071434-94dc161771f1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2291&q=80',
-      price: 12.95,
-    },
-  ]);
+  const { send } = useContext(ApiContext);
 
-  const [cart, setCart] = useState([{ inventory_id: 0 }]);
+  const [inventory, setInventory] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [earnings, setEarnings] = useState([]);
 
-  return <StoreContext.Provider value={{ cart, products, setProducts, setCart }}>{children}</StoreContext.Provider>;
+  useEffect(async () => {
+    let response = await send("GET:/inventory");
+    setInventory(response.inventory);
+
+    response = await send("GET:/cart");
+    console.log("CART!!!!", response);
+    setCart(response.cart);
+
+    response = await send("GET:/earnings");
+    setEarnings(response.earnings);
+  }, []);
+
+  return <StoreContext.Provider value={{ cart, inventory, earnings }}>{children}</StoreContext.Provider>;
 };
