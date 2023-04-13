@@ -26,47 +26,47 @@ interface HomePageProps {
 }
 
 export default function HomePage() {
-    // gets current user session info. If not logged in, redirect to login
-    const { state } = useContext(AuthContext);
-    const { inventory } = useContext(StoreContext);
+  // gets current user session info. If not logged in, redirect to login
+  const { state } = useContext(AuthContext);
+  const { inventory } = useContext(StoreContext);
 
-    // this is used for product search filtering
-    const [products, setProducts] = useState({
-        query: '',
-        list: inventory,
+  // this is used for product search filtering
+  const [products, setProducts] = useState({
+    query: '',
+    list: inventory,
+  });
+  const handleChange = (e) => {
+    const results = inventory.filter((thisData) => {
+      if (e === '') return inventory;
+      return (
+        thisData.title.toLowerCase().includes(e.toLowerCase()) ||
+        thisData.description.toLowerCase().includes(e.toLowerCase())
+      );
     });
-    const handleChange = (e) => {
-        const results = inventory.filter((thisData) => {
-            if (e === '') return inventory;
-            return (
-                thisData.title.toLowerCase().includes(e.toLowerCase()) ||
-                thisData.description.toLowerCase().includes(e.toLowerCase())
-            );
-        });
-        setProducts({
-            query: e,
-            list: results,
-        });
-    };
+    setProducts({
+      query: e,
+      list: results,
+    });
+  };
 
-    useEffect(() => {
-        setProducts({ query: products.query, list: inventory });
-    }, [inventory]);
+  useEffect(() => {
+    setProducts({ query: products.query, list: inventory });
+  }, [inventory]);
 
-    const { cartItems, addItemToCart, removeItemFromCart } = useContext(StoreContext);
+  const { cartItems, addItemToCart, removeItemFromCart } = useContext(StoreContext);
 
-    const qtyRef = useRef<number[]>([]);
+  const qtyRef = useRef<number[]>([]);
 
-    const arrTemp = new Array(inventory.length);
-    arrTemp.fill(1, 0);
-    qtyRef.current = arrTemp;
+  const arrTemp = new Array(inventory.length);
+  arrTemp.fill(1, 0);
+  qtyRef.current = arrTemp;
 
   const theme = useMantineTheme();
 
- 
 
 
-  
+
+
 
   return (
     <>
@@ -78,12 +78,12 @@ export default function HomePage() {
         <div id="main">
           <Container my="sm">
             <h2>
-                          Welcome   
-                        
-                          {state.user != null ? " " + state.user.firstName + " " + state.user.lastName : ""}
-                          !
-                      </h2>
-                      <Button onClick={()=>console.log(state) }>log state   </Button>
+              Welcome
+
+              {state.user != null ? " " + state.user.firstName + " " + state.user.lastName : ""}
+              !
+            </h2>
+            <Button onClick={() => console.log(state)}>log state   </Button>
             <Autocomplete
               placeholder="Search the Store"
               icon={<IconSearch size="1rem" stroke={1.5} />}
@@ -121,20 +121,20 @@ export default function HomePage() {
 
                       <Group spacing="xs" noWrap={true}>
                         <NumberInput
-                                    id="ref"
-                                    defaultValue={1}
-                                    min={1}
+                          id="ref"
+                          defaultValue={1}
+                          min={1}
 
-                                    max={ProductData.quantity}
-                                    placeholder="QTY"
-                                    label="Amount"
-                                    //withAsterisk
-                                    ref={el => qtyRef.current[i] = el}
+                          max={ProductData.quantity}
+                          placeholder="QTY"
+                          label="Amount"
+                          //withAsterisk
+                          ref={el => qtyRef.current[i] = el}
                         />
-                                <Button
-                                    onClick={() =>
-                                        addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value), ProductData.price)
-                                    }  
+                        <Button
+                          onClick={() =>
+                            addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value), ProductData.price)
+                          }
                           variant="light"
                           color="blue"
                           fullWidth

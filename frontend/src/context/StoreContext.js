@@ -29,6 +29,7 @@ export const StoreProvider = ({ children }) => {
     const addNewCartItem = (id, qty, price) => {
         const newClassObject = new CartItem(id, qty, price);
         setCartItems([...cartItems, newClassObject]);
+        send("POST:/cart", {inventory_id: id, quantity: qty});
     }
 
     const addItemToCart = (id, qty, price) => {
@@ -48,6 +49,7 @@ export const StoreProvider = ({ children }) => {
                 return cartItemInstance;
             });
             setCartItems(updatedArr);
+            send("PUT:/cart", {inventory_id: id, quantity: qty});
         }
     }
 
@@ -57,6 +59,7 @@ export const StoreProvider = ({ children }) => {
     const removeItemFromCart = (inv_id) => {
         const filteredItems = cartItems.filter(classObj => classObj.inventory_id !== inv_id);
         setCartItems(filteredItems);
+        send("DELETE:/cart", {inventory_id: inv_id});
     }
 
     // increase qty of item in cart by 1
@@ -68,6 +71,7 @@ export const StoreProvider = ({ children }) => {
             return item;
         });
         setCartItems(updatedArr);
+        send("PUT:/cart", {inventory_id: id, quantity: 1});
     }
 
     // decrease qty of item in cart by 1
@@ -79,6 +83,7 @@ export const StoreProvider = ({ children }) => {
             return item;
         });
         setCartItems(updatedArr);
+        send("PUT:/cart", {inventory_id: id, quantity: -1});
     }
 
 
@@ -94,11 +99,11 @@ export const StoreProvider = ({ children }) => {
     let response = await send("GET:/inventory");
     setInventory(response.inventory);
 
-    /*
+    
     response = await send("GET:/cart");
     console.log("CART!!!!", response);
-    setCart(response.cart);
-    */
+    setCartItems(response.cart);
+    
 
     //  response = await send("GET:/earnings");
     //  console.log("earnings response: ", response);

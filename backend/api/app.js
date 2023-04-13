@@ -301,7 +301,7 @@ app.post("/refresh", (req, res) => {
 */
 
 app.get("/inventory", (req, res) => {
-  
+
 
   try {
     pool.query(
@@ -345,7 +345,7 @@ app.get("/cart", (req, res) => {
           return;
         }
 
-        if(typeof data[0] === 'undefined') {
+        if (typeof data[0] === 'undefined') {
           res.json({ cart: [] }); // send empty cart to user
           return;
         }
@@ -353,7 +353,7 @@ app.get("/cart", (req, res) => {
         const cart_id = typeof data[0].cart_id;
 
         pool.query(
-          "SELECT item.item_id, item.inventory_id, item.quantity FROM item INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE item.cart_id = ?",
+          "SELECT inventory.inventory_id, inventory.title, inventory.description, inventory.image_url, inventory.price, item.quantity FROM cart LEFT JOIN item ON cart.cart_id=item.cart_id LEFT JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE cart.account_guid = ? AND cart.checkout = 0",
           [account_guid],
           (err, data) => {
             if (err) {
@@ -385,7 +385,7 @@ app.get("/earnings", (req, res) => {
     ).account_guid;
 
     pool.query(
-      "SELECT user.earnings FROM user WHERE user.account_guid = ?",
+      "SELECT user.earnings, user.type FROM user WHERE user.account_guid = ?",
       [account_guid],
       (err, data) => {
         if (err) {
@@ -394,7 +394,7 @@ app.get("/earnings", (req, res) => {
           return;
         }
 
-        res.json({ earnings: data[0].earnings });
+        res.json({ earnings: data[0].earnings, type: data[0].type });
 
       }
     );
@@ -405,20 +405,167 @@ app.get("/earnings", (req, res) => {
 
 app.post("/cart", (req, res) => {
   // JWT verify
+  try {
+    // Declare variables from request
 
-  const item = req.body.item;
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+    const inventory_id = req.body.inventory_id;
+    const quantity = req.body.quantity;
 
-  // TODO: find cart of user
+    // TODO: find cart of user
+    pool.query(
+      "SELECT * FROM cart WHERE account_guid = ? AND checkout = 0",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
 
-  // TODO: if no cart exists (or one that has not been checkedout), create one
+        let cart_id;
 
-  // TODO: save cart ID
+        // No empty cart available
+        if (data.length <= 0) {
+          // TODO: create cart
+          pool.query("INSERT INTO cart (account_guid, checkout) VALUES (?, ?)", [account_guid, 0], (err, data) => {
+            if (err) {
+              console.error(err);
+              res.status(401).json({ status: -2 });
+              return;
+            }
 
-  // TODO: insert into item (add cart ID)
+            cart_id = data.insertId;
+            logger.info(data);
+            logger.info(cart_id);
 
-  // TODO: get ALL items in cart
+            pool.query("INSERT INTO item (cart_id, inventory_id, quantity) VALUES (?, ?, ?)", [cart_id, inventory_id, quantity], (err, data) => {
+              if (err) {
+                console.error(err);
+                res.status(401).json({ status: -3 });
+                return;
+              }
 
-  // TODO: return cart
+              res.json({ status: 1 });
+
+            });
+
+          });
+        }
+
+        // Cart exists
+        else {
+          cart_id = data[0].cart_id;
+
+          pool.query("INSERT INTO item (cart_id, inventory_id, quantity) VALUES (?, ?, ?)", [cart_id, inventory_id, quantity], (err, data) => {
+            if (err) {
+              console.error(err);
+              res.status(401).json({ status: -3 });
+              return;
+            }
+
+            res.json({ status: 1 });
+
+          });
+        }
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
+
+app.put("/cart", (req, res) => {
+  // JWT verify
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    const inventory_id = req.body.inventory_id;
+    const quantity = req.body.quantity;
+
+    // TODO: find cart of user
+    pool.query(
+      "SELECT * FROM cart WHERE account_guid = ? AND checkout = 0",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        const cart_id = data[0].cart_id;
+
+        pool.query("UPDATE item SET quantity = quantity + ? WHERE item.inventory_id = ? AND item.cart_id = ?", [quantity, inventory_id, cart_id], (err, data) => {
+          if (err) {
+            console.error(err);
+            res.status(401).json({ status: -3 });
+            return;
+          }
+
+          res.json({ status: 1 });
+
+        });
+
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
+
+app.delete("/cart", (req, res) => {
+  // JWT verify
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    const inventory_id = req.body.inventory_id;
+
+    // TODO: find cart of user
+    pool.query(
+      "SELECT * FROM cart WHERE account_guid = ? AND checkout = 0",
+      [account_guid],
+      (err, data) => {
+        if (err) {
+          console.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        const cart_id = data[0].cart_id;
+
+        pool.query("DELETE FROM item WHERE item.inventory_id = ? AND item.cart_id = ?", [inventory_id, cart_id], (err, data) => {
+          if (err) {
+            console.error(err);
+            res.status(401).json({ status: -3 });
+            return;
+          }
+
+          res.json({ status: 1 });
+
+        });
+
+
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
 });
 
 app.post("/checkout", (req, res) => {
@@ -448,7 +595,7 @@ app.post("/checkout", (req, res) => {
 
         // Get the active cart
         pool.query(
-          "SELECT * FROM `cart` WHERE account_guid = ? AND checkout = 0",
+          "SELECT cart.cart_id FROM cart INNER JOIN item ON cart.cart_id=item.item_id INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE account_guid = ? AND checkout = 0",
           [account_guid],
           (err, data) => {
             if (err) {
@@ -457,21 +604,11 @@ app.post("/checkout", (req, res) => {
               return;
             }
 
-            const cart = data[0];
+            // TODO: increment each account_guid's earnings
 
-            // Get each item in the cart
-            pool.query(
-              "SELECT * FROM `item` WHERE cart_id = ?",
-              [cart.cart_id],
-              (err, data) => {
-                if (err) {
-                  console.error(err);
-                  res.status(401).json({ status: -1 });
-                  return;
-                }
-                const items = data;
-              }
-            );
+            // TODO: set cart_id checkout = 1
+
+            res.json({ debug: data });
           }
         );
       }
