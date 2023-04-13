@@ -10,18 +10,15 @@ export const StoreProvider = ({ children }) => {
   const [earnings, setEarnings] = useState([]);
   const [cart, setCart] = useState([{ cart_id: 0, cart_num_items: 0, checkout: false, item_ids: [], item_quantities: [] }]);
 
-
-
-
-
-
   useEffect(async () => {
     let response = await send("GET:/inventory");
     setInventory(response.inventory);
 
+    /*
     response = await send("GET:/cart");
     console.log("CART!!!!", response);
     setCart(response.cart);
+    */
 
     response = await send("GET:/earnings");
     setEarnings(response.earnings);
