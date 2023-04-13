@@ -171,7 +171,8 @@ export function AuthProvider({ children }) {
           })
           .then((data) => {
             // Convert to an Object
-            data = JSON.parse(data);
+              data = JSON.parse(data);
+              console.log("register data:", data);
 
             // SecureStore
             secureLocalStorage.setItem("accessToken", data.accessToken);

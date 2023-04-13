@@ -20,6 +20,8 @@ interface HeaderProps {
 export function Header({ toggleDir, dir }: HeaderProps) {
     const { state, signOut } = useContext(AuthContext);
 
+    console.log("state: ", state);
+
     const { classes, cx } = useStyles();
     var { cartItems } = useContext(StoreContext);
     console.log("cart from header: ", cartItems);
@@ -35,7 +37,7 @@ export function Header({ toggleDir, dir }: HeaderProps) {
             <Image src={logo} className="logo" alt="Logo" height={35} width={230} />
           </Link>
         </Center>
-              <Button onClick= {() => console.log(cartItems)}> DEBUG: Cart</Button>
+              
         {/* if pathname is login, dont show cart of profile*/}
         {router.pathname !== '/login' ? (
           <Group position="right">

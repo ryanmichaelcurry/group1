@@ -78,8 +78,12 @@ export default function HomePage() {
         <div id="main">
           <Container my="sm">
             <h2>
-              Welcome back, {state.user.firstName} {state.user.lastName}
-            </h2>
+                          Welcome   
+                        
+                          {state.user != null ? " " + state.user.firstName + " " + state.user.lastName : ""}
+                          !
+                      </h2>
+                      <Button onClick={()=>console.log(state) }>log state   </Button>
             <Autocomplete
               placeholder="Search the Store"
               icon={<IconSearch size="1rem" stroke={1.5} />}
@@ -127,8 +131,10 @@ export default function HomePage() {
                                     //withAsterisk
                                     ref={el => qtyRef.current[i] = el}
                         />
-                        <Button
-                          onClick={()=>addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value) )}  // replace 1 with qty selected
+                                <Button
+                                    onClick={() =>
+                                        addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value), ProductData.price)
+                                    }  
                           variant="light"
                           color="blue"
                           fullWidth
