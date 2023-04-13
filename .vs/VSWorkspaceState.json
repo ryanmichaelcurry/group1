@@ -4,13 +4,10 @@
     "\\frontend",
     "\\frontend\\src",
     "\\frontend\\src\\components",
-    "\\frontend\\src\\components\\HomePage",
-    "\\frontend\\src\\components\\HomePage\\CategoryCard",
     "\\frontend\\src\\components\\Layout",
     "\\frontend\\src\\components\\Layout\\Header",
     "\\frontend\\src\\context",
-    "\\frontend\\src\\pages",
-    "\\frontend\\src\\public"
+    "\\frontend\\src\\pages"
   ],
   "SelectedNode": "\\frontend\\src\\context\\StoreContext.js",
   "PreviewInSolutionExplorer": false

@@ -21,8 +21,8 @@ export function Header({ toggleDir, dir }: HeaderProps) {
     const { state, signOut } = useContext(AuthContext);
 
     const { classes, cx } = useStyles();
-    var { cart } = useContext(StoreContext);
-    console.log("cart from header: ", cart);
+    var { cartItems } = useContext(StoreContext);
+    console.log("cart from header: ", cartItems);
 
   // router is used to determine what the pathname is.
   const router = useRouter();
@@ -35,7 +35,7 @@ export function Header({ toggleDir, dir }: HeaderProps) {
             <Image src={logo} className="logo" alt="Logo" height={35} width={230} />
           </Link>
         </Center>
-              <Button onClick= {() => console.log(cart)}> DEBUG: Cart</Button>
+              <Button onClick= {() => console.log(cartItems)}> DEBUG: Cart</Button>
         {/* if pathname is login, dont show cart of profile*/}
         {router.pathname !== '/login' ? (
           <Group position="right">
@@ -58,7 +58,7 @@ export function Header({ toggleDir, dir }: HeaderProps) {
                       <Link href="/Cart" passHref>
                           
                           <Button leftIcon={
-                              <Indicator label={cart[0].cart_num_items} disabled={cart[0].cart_num_items == 0} color="red" size={16}>
+                              <Indicator label={cartItems.length} disabled={cartItems.length == 0} color="red" size={16}>
                                   <ShoppingCart />
                               </Indicator>
                           } variant="white"></Button>
