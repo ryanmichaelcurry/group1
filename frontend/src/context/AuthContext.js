@@ -1,5 +1,8 @@
+
+
 import React from "react";
-import  secureLocalStorage  from  "react-secure-storage";
+import secureLocalStorage from "react-secure-storage";
+
 
 export const AuthContext = React.createContext();
 
@@ -38,7 +41,7 @@ export function AuthProvider({ children }) {
       user: null,
     }
   );
-
+        
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = () => {
