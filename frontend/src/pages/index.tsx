@@ -83,7 +83,7 @@ export default function HomePage() {
               {state.user != null ? " " + state.user.firstName + " " + state.user.lastName : ""}
               !
             </h2>
-            <Button onClick={() => console.log(state)}>log state   </Button>
+            
             <Autocomplete
               placeholder="Search the Store"
               icon={<IconSearch size="1rem" stroke={1.5} />}

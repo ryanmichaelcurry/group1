@@ -76,7 +76,7 @@ export default function CartPage() {
   const router = useRouter();
 
   const { state } = useContext(AuthContext);
-  const { cartItems, cartTotal, setCartItems } = useContext(StoreContext);
+  const { cartItems, cartTotal, setCartItems, removeItemFromCart } = useContext(StoreContext);
   const { send } = useContext(ApiContext);
 
   const { classes } = useStyles();
@@ -131,7 +131,7 @@ export default function CartPage() {
       </td>
       <td>
         <Group spacing={0} position="right">
-          <ActionIcon color="red" onClick={() => send("DELETE:/cart", { inventory_id: item.inventory_id }).then((res: any) => { console.log("onClick", res); send("GET:/cart").then((res: any) => setCartItems(res.cart)); })}>
+          <ActionIcon color="red" onClick={() => removeItemFromCart(item.inventory_id)}>
             <IconTrash size="1rem" stroke={1.5} />
           </ActionIcon>
         </Group>
