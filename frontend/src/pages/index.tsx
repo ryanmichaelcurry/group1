@@ -36,7 +36,7 @@ export default function HomePage() {
     list: inventory,
   });
   const handleChange = (e) => {
-    const results = inventory.filter((thisData: any) => {
+    const results = inventory.filter((thisData) => {
       if (e === '') return inventory;
       return (
         thisData.title.toLowerCase().includes(e.toLowerCase()) ||

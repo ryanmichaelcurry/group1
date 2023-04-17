@@ -353,7 +353,7 @@ app.get("/cart", (req, res) => {
         const cart_id = typeof data[0].cart_id;
 
         pool.query(
-          "SELECT inventory.inventory_id, inventory.title, inventory.description, inventory.image_url, inventory.price, item.quantity, inventory.quantity as quantity_max FROM cart LEFT JOIN item ON cart.cart_id=item.cart_id LEFT JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE cart.account_guid = ? AND cart.checkout = 0",
+          "SELECT inventory.inventory_id, inventory.title, inventory.description, inventory.image_url, inventory.price, item.quantity FROM cart LEFT JOIN item ON cart.cart_id=item.cart_id LEFT JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE cart.account_guid = ? AND cart.checkout = 0",
           [account_guid],
           (err, data) => {
             if (err) {

@@ -1,14 +1,12 @@
 import React, { createContext, useEffect, useState, useContext } from 'react';
 import { ApiContext } from './ApiContext';
-import { AuthContext } from './AuthContext';
 
 export const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-    const { send } = useContext(ApiContext);
-    const { state } = useContext(AuthContext);
+  const { send } = useContext(ApiContext);
 
-    const [inventory, setInventory] = useState([]);
+  const [inventory, setInventory] = useState([]);
     const [earnings, setEarnings] = useState([]);
 
     // cartItem Decl
@@ -31,7 +29,7 @@ export const StoreProvider = ({ children }) => {
     const addNewCartItem = (id, qty, price) => {
         const newClassObject = new CartItem(id, qty, price);
         setCartItems([...cartItems, newClassObject]);
-        send("POST:/cart", { inventory_id: id, quantity: qty });
+        send("POST:/cart", {inventory_id: id, quantity: qty});
     }
 
     const addItemToCart = (id, qty, price) => {
@@ -51,17 +49,17 @@ export const StoreProvider = ({ children }) => {
                 return cartItemInstance;
             });
             setCartItems(updatedArr);
-            send("PUT:/cart", { inventory_id: id, quantity: qty });
+            send("PUT:/cart", {inventory_id: id, quantity: qty});
         }
     }
 
 
-
+   
     // remove from cart. Send inventory_id
     const removeItemFromCart = (inv_id) => {
         const filteredItems = cartItems.filter(classObj => classObj.inventory_id !== inv_id);
         setCartItems(filteredItems);
-        send("DELETE:/cart", { inventory_id: inv_id });
+        send("DELETE:/cart", {inventory_id: inv_id});
     }
 
     // increase qty of item in cart by 1
@@ -73,7 +71,7 @@ export const StoreProvider = ({ children }) => {
             return item;
         });
         setCartItems(updatedArr);
-        send("PUT:/cart", { inventory_id: id, quantity: 1 });
+        send("PUT:/cart", {inventory_id: id, quantity: 1});
     }
 
     // decrease qty of item in cart by 1
@@ -85,7 +83,7 @@ export const StoreProvider = ({ children }) => {
             return item;
         });
         setCartItems(updatedArr);
-        send("PUT:/cart", { inventory_id: id, quantity: -1 });
+        send("PUT:/cart", {inventory_id: id, quantity: -1});
     }
 
 
@@ -97,16 +95,20 @@ export const StoreProvider = ({ children }) => {
 
 
 
-    useEffect(() => {
-        if(typeof state.user !== 'undefined') {
-            send("GET:/inventory").then((res) => setInventory(res.inventory));
-            send("GET:/cart").then((res) => setCartItems(res.cart));
-        }
+  useEffect(async () => {
+    let response = await send("GET:/inventory");
+    setInventory(response.inventory);
 
-        //  response = await send("GET:/earnings");
-        //  console.log("earnings response: ", response);
-        //if(response.earnings != null) setEarnings(response.earnings);
-    }, [state]);
+    
+    response = await send("GET:/cart");
+    console.log("CART!!!!", response);
+    setCartItems(response.cart);
+    
+
+    //  response = await send("GET:/earnings");
+    //  console.log("earnings response: ", response);
+    //if(response.earnings != null) setEarnings(response.earnings);
+  }, []);
 
     return <StoreContext.Provider value={{ cartItems, addItemToCart, removeItemFromCart, increaseItemQty, decreaseItemQty, cartTotal, inventory, earnings }}>{children}</StoreContext.Provider>;
 };
