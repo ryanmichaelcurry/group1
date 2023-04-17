@@ -159,6 +159,7 @@ app.post("/login", (req, res) => {
 
   logger.info("login!");
   logger.info("/login", req.body);
+  
   try {
     // Declare variables from request
 
@@ -397,7 +398,13 @@ app.get("/cart", (req, res) => {
               return;
             }
 
+            if(data[0].inventory_id === null) {
+              res.json({ cart: [] }); // send cart to user
+              return;
+            }
+
             res.json({ cart: data }); // send cart to user
+            return;
 
           }
         );

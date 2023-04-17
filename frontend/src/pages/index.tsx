@@ -133,7 +133,7 @@ export default function HomePage() {
                         />
                         <Button
                           onClick={() =>
-                            addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value), ProductData.price)
+                            addItemToCart(ProductData.inventory_id, Number(qtyRef.current[i].value), ProductData.price, ProductData.title)
                           }
                           variant="light"
                           color="blue"

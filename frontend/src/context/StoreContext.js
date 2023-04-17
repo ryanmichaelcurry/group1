@@ -13,10 +13,11 @@ export const StoreProvider = ({ children }) => {
 
     // cartItem Decl
     class CartItem {
-        constructor(inventory_id, quantity, price) {
+        constructor(inventory_id, quantity, price, title) {
             this.inventory_id = inventory_id;
             this.quantity = quantity;
             this.price = price;
+            this.title = title;
         }
     }
 
@@ -28,19 +29,19 @@ export const StoreProvider = ({ children }) => {
     const [cartDetails, setCartDetails] = useState([{ cart_id: 12345, }])
 
 
-    const addNewCartItem = (id, qty, price) => {
-        const newClassObject = new CartItem(id, qty, price);
+    const addNewCartItem = (id, qty, price, title) => {
+        const newClassObject = new CartItem(id, qty, price, title);
         setCartItems([...cartItems, newClassObject]);
         send("POST:/cart", { inventory_id: id, quantity: qty });
     }
 
-    const addItemToCart = (id, qty, price) => {
+    const addItemToCart = (id, qty, price, title) => {
         // see if item is already in cart and store index if so
         const ind = cartItems.findIndex(item => { return item.inventory_id == id });
 
         if (ind == -1) {
             // item is not in cart yet. call addNewCartItems
-            addNewCartItem(id, qty, price);
+            addNewCartItem(id, qty, price, title);
         }
         else {
             // item is already in cart. Adjust quantity at index
@@ -101,7 +102,7 @@ export const StoreProvider = ({ children }) => {
         if (typeof state.user !== 'undefined') {
             send("GET:/inventory").then((res) => setInventory(res.inventory));
             try {
-                send("GET:/cart").then((res) => setCartItems(res.cart));
+                send("GET:/cart").then((res) => { console.log("in use Effect", res); setCartItems(res.cart);});
             }
             catch (e) {
                 console.log(e);
