@@ -14,7 +14,10 @@ import {
   NumberInput, NumberInputHandlers,
   createStyles,
   rem,
-  Container
+  Container,
+  TextInput,
+  Button,
+  Modal,
 } from '@mantine/core';
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import { IconPlus, IconMinus } from '@tabler/icons-react';
@@ -73,11 +76,37 @@ export default function CartPage() {
   const router = useRouter();
 
   const { state } = useContext(AuthContext);
-  const { cartItems, cartTotal } = useContext(StoreContext);
+  const { cartItems, cartTotal, setCartItems } = useContext(StoreContext);
+  const { send } = useContext(ApiContext);
 
   const { classes } = useStyles();
   const handlers = useRef<NumberInputHandlers>(null);
   const [value, setValue] = useState<number | ''>(1);
+
+  const [showCheckoutModal, setshowCheckoutModal] = useState(false);
+
+  const [userData, setUserData] = useState({
+    address: '',
+    creditCardNumber: '',
+    CVV: '',
+    name: ''
+  });
+
+  const handleUpload = async () => {
+    const response = await send("POST:/checkout", userData);
+    console.log(response);
+    if (response.status) {
+      setshowCheckoutModal(false);
+      setUserData({
+        address: '',
+        creditCardNumber: '',
+        CVV: '',
+        name: ''
+      });
+      setCartItems([]);
+    }
+  };
+
 
   const theme = useMantineTheme();
 
@@ -96,43 +125,13 @@ export default function CartPage() {
       </td>
 
       <td>
-        <div className={classes.wrapper}>
-          <ActionIcon<'button'>
-            size={28}
-            variant="transparent"
-            onClick={() => handlers.current?.decrement()}
-            disabled={value === 1}
-            className={classes.control}
-            onMouseDown={(event) => event.preventDefault()}
-          >
-            <IconMinus size="1rem" stroke={1.5} />
-          </ActionIcon>
-
-          <NumberInput
-            variant="unstyled"
-            min={1}
-            max={item.quantity_max}
-            handlersRef={handlers}
-            value={value}
-            onChange={setValue}
-            classNames={{ input: classes.input }}
-          />
-
-          <ActionIcon<'button'>
-            size={28}
-            variant="transparent"
-            onClick={() => handlers.current?.increment()}
-            disabled={value === item.quantity_max}
-            className={classes.control}
-            onMouseDown={(event) => event.preventDefault()}
-          >
-            <IconPlus size="1rem" stroke={1.5} />
-          </ActionIcon>
-        </div>
+        <Text fz="sm" fw={500}>
+          {item.quantity}
+        </Text>
       </td>
       <td>
         <Group spacing={0} position="right">
-          <ActionIcon color="red">
+          <ActionIcon color="red" onClick={() => send("DELETE:/cart", { inventory_id: item.inventory_id }).then((res: any) => { console.log("onClick", res); send("GET:/cart").then((res: any) => setCartItems(res.cart)); })}>
             <IconTrash size="1rem" stroke={1.5} />
           </ActionIcon>
         </Group>
@@ -160,6 +159,57 @@ export default function CartPage() {
         <h2>
           Total: {cartTotal}
         </h2>
+        <Button variant="outline" onClick={() => setshowCheckoutModal(true)} style={{ marginTop: 32 }}>
+          Checkout Cart
+        </Button>
+
+        <Modal
+          title="Checkout"
+          opened={showCheckoutModal}
+          onClose={() => setshowCheckoutModal(false)}
+          padding="sm"
+        >
+          <TextInput
+            label="Address"
+            placeholder="308 Negra Arroyo Lane"
+            value={userData.address}
+            onChange={(event) => setUserData({ ...userData, address: event.target.value })}
+            required
+          />
+
+          <TextInput
+            label="Card Holder Name"
+            placeholder="Walter White"
+            value={userData.name}
+            onChange={(event) => setUserData({ ...userData, name: event.target.value })}
+            required
+          />
+
+          <TextInput
+            label="Credit Card Number"
+            placeholder="3026 1839 1935 7157"
+            type="number"
+            min={0}
+            value={userData.creditCardNumber}
+            onChange={(event) => setUserData({ ...userData, creditCardNumber: event.target.value })}
+            required
+          />
+
+          <TextInput
+            label="CVV"
+            placeholder="123"
+            type="number"
+            min={0}
+            value={userData.CVV}
+            onChange={(event) => setUserData({ ...userData, CVV: event.target.value })}
+            required
+          />
+
+
+          <Button variant="outline" onClick={handleUpload} style={{ marginTop: 16 }}>
+            Checkout
+          </Button>
+        </Modal>
       </ScrollArea>
     </Container>
   );

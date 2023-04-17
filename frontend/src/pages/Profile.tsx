@@ -2,9 +2,12 @@ import { Text, Container, Button, Modal, TextInput } from '@mantine/core';
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { StoreContext } from '../context/StoreContext';
+import { ApiContext } from '../context/ApiContext';
 
 export function ProfilePage() {
     const { state } = useContext(AuthContext);
+    const { setInventory } = useContext(StoreContext);
+    const { send } = useContext(ApiContext);
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [itemData, setItemData] = useState({
@@ -16,8 +19,9 @@ export function ProfilePage() {
     });
 
     const handleUpload = async () => {
-        const response = { success: false };
-        if (response.success) {
+        const response = await send("POST:/inventory", itemData);
+        console.log(response);
+        if (response.status) {
             setShowUploadModal(false);
             setItemData({
                 title: '',
@@ -26,6 +30,7 @@ export function ProfilePage() {
                 quantity: '',
                 image_url: '',
             });
+            send("GET:/inventory").then((res) => setInventory(res.inventory));
         }
     };
 
@@ -36,8 +41,14 @@ export function ProfilePage() {
                     Welcome to your profile, {state.user.firstName}!
                 </Text>
 
+                <br></br>
+
                 <Text>
                     Email address: {state.user.email}
+                </Text>
+
+                <Text>
+                    Earnings: {state.user.earnings}
                 </Text>
 
                 <Button variant="outline" onClick={() => setShowUploadModal(true)} style={{ marginTop: 32 }}>

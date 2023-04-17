@@ -90,7 +90,7 @@ export const StoreProvider = ({ children }) => {
 
 
 
-    const cartTotal = cartItems.reduce(
+    let cartTotal = cartItems.reduce(
         (runningTot, currentItem) => runningTot + (currentItem.quantity * currentItem.price), 0
     )
 
@@ -98,15 +98,16 @@ export const StoreProvider = ({ children }) => {
 
 
     useEffect(() => {
-        if(typeof state.user !== 'undefined') {
+        if (typeof state.user !== 'undefined') {
             send("GET:/inventory").then((res) => setInventory(res.inventory));
-            send("GET:/cart").then((res) => setCartItems(res.cart));
+            try {
+                send("GET:/cart").then((res) => setCartItems(res.cart));
+            }
+            catch (e) {
+                console.log(e);
+            }
         }
-
-        //  response = await send("GET:/earnings");
-        //  console.log("earnings response: ", response);
-        //if(response.earnings != null) setEarnings(response.earnings);
     }, [state]);
 
-    return <StoreContext.Provider value={{ cartItems, addItemToCart, removeItemFromCart, increaseItemQty, decreaseItemQty, cartTotal, inventory, earnings }}>{children}</StoreContext.Provider>;
+    return <StoreContext.Provider value={{ cartItems, addItemToCart, removeItemFromCart, increaseItemQty, decreaseItemQty, cartTotal, setCartItems, inventory, setInventory, earnings }}>{children}</StoreContext.Provider>;
 };

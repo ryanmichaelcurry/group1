@@ -209,7 +209,8 @@ app.post("/login", (req, res) => {
                 firstName: data[0].first,
                 lastName: data[0].last,
                 dateOfBirth: data[0].dateOfBirth,
-                type: data[0].type
+                type: data[0].type,
+                earnings: data[0].earnings
               },
             });
           }
@@ -280,6 +281,8 @@ app.post("/refresh", (req, res) => {
                 firstName: data[0].first,
                 lastName: data[0].last,
                 dateOfBirth: data[0].dateOfBirth,
+                type: data[0].type,
+                earnings: data[0].earnings
               },
             });
           }
@@ -602,6 +605,7 @@ app.delete("/cart", (req, res) => {
 
 app.post("/checkout", (req, res) => {
   // JWT verify
+  logger.info("/checkout", req.body);
 
   try {
     // Declare variables from request
@@ -627,7 +631,7 @@ app.post("/checkout", (req, res) => {
 
         // Get the active cart
         pool.query(
-          "SELECT inventory.account_guid AS account_guid, inventory.price AS price, item.quantity AS quantity FROM cart INNER JOIN item ON cart.cart_id=item.item_id INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE account_guid = ? AND checkout = 0",
+          "SELECT inventory.account_guid, inventory.price, item.quantity FROM cart LEFT JOIN item ON cart.cart_id=item.cart_id LEFT JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE cart.account_guid = ? AND cart.checkout = 0",
           [account_guid],
           (err, data) => {
             if (err) {
@@ -636,23 +640,57 @@ app.post("/checkout", (req, res) => {
               return;
             }
 
-            // TODO: increment each account_guid's earnings
+            let result = {};
 
-            // TODO: set cart_id checkout = 1
-            /*
-            pool.query("UPDATE cart SET checkout = 1 WHERE account_guid", [account_guid], (err, data) => {
+            // Loop through each object in the JSON array
+            for (let i = 0; i < data.length; i++) {
+              let obj = data[i];
+
+              // Check if this account_guid has been seen before
+              if (result[obj.account_guid]) {
+                // If it has, add the value of price * quantity to the existing total
+                result[obj.account_guid] += obj.price * obj.quantity;
+              } else {
+                // If it hasn't, set the total to the value of price * quantity
+                result[obj.account_guid] = obj.price * obj.quantity;
+              }
+            }
+
+            // Convert the resulting object into an array of objects with account_guid and earnings
+            let resultList = [];
+            for (let guid in result) {
+              resultList.push({ account_guid: guid, earnings: result[guid] });
+            }
+
+
+            // increment each account_guid's earnings
+            resultList.forEach(element => {
+              pool.query(
+                "UPDATE user SET earnings = earnings + ? WHERE account_guid = ?",
+                [element.earnings, element.account_guid],
+                (err, data) => {
+                  if (err) {
+                    console.error(err);
+                    res.status(401).json({ status: -1 });
+                    return;
+                  }
+                });
+            });
+
+            // set cart_id checkout = 1
+
+            pool.query("UPDATE cart SET checkout = 1 WHERE account_guid = ?", [account_guid], (err, data) => {
               if (err) {
                 console.error(err);
                 res.status(401).json({ status: -3 });
                 return;
               }
-    
-              res.json({ status: 1 });
-    
-            });
-            */
 
-            res.json({ debug: data });
+              res.json({ status: 1 });
+
+            });
+
+
           }
         );
       }
