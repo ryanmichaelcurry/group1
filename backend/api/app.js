@@ -209,6 +209,7 @@ app.post("/login", (req, res) => {
                 firstName: data[0].first,
                 lastName: data[0].last,
                 dateOfBirth: data[0].dateOfBirth,
+                type: data[0].type
               },
             });
           }
@@ -318,6 +319,37 @@ app.get("/inventory", (req, res) => {
 
       }
     );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+
+});
+
+app.post("/inventory", (req, res) => {
+  logger.info("POST:/inventory", req.body);
+
+  try {
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    const title = req.body.title;
+    const image_url = req.body.image_url;
+    const quantity = req.body.quantity;
+    const price = req.body.price;
+    const description = req.body?.description;
+
+    pool.query("INSERT INTO inventory (account_guid, title, image_url, quantity, price, description) VALUES (?, ?, ?, ?, ?, ?)", [account_guid, title, image_url, quantity, price, description], (err, data) => {
+      if (err) {
+        console.error(err);
+        res.status(401).json({ status: -1 });
+        return;
+      }
+
+      res.json({ status: 1 });
+
+    });
   } catch (error) {
     res.status(500).json({ status: 0 });
   }
@@ -595,7 +627,7 @@ app.post("/checkout", (req, res) => {
 
         // Get the active cart
         pool.query(
-          "SELECT cart.cart_id FROM cart INNER JOIN item ON cart.cart_id=item.item_id INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE account_guid = ? AND checkout = 0",
+          "SELECT inventory.account_guid AS account_guid, inventory.price AS price, item.quantity AS quantity FROM cart INNER JOIN item ON cart.cart_id=item.item_id INNER JOIN inventory ON item.inventory_id=inventory.inventory_id WHERE account_guid = ? AND checkout = 0",
           [account_guid],
           (err, data) => {
             if (err) {
@@ -607,6 +639,18 @@ app.post("/checkout", (req, res) => {
             // TODO: increment each account_guid's earnings
 
             // TODO: set cart_id checkout = 1
+            /*
+            pool.query("UPDATE cart SET checkout = 1 WHERE account_guid", [account_guid], (err, data) => {
+              if (err) {
+                console.error(err);
+                res.status(401).json({ status: -3 });
+                return;
+              }
+    
+              res.json({ status: 1 });
+    
+            });
+            */
 
             res.json({ debug: data });
           }
@@ -617,6 +661,7 @@ app.post("/checkout", (req, res) => {
     res.status(500).json({ status: 0 });
   }
 });
+
 
 /* View Logs */
 app.get("/logs", (request, response) => {
