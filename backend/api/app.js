@@ -159,7 +159,7 @@ app.post("/login", (req, res) => {
 
   logger.info("login!");
   logger.info("/login", req.body);
-  
+
   try {
     // Declare variables from request
 
@@ -200,6 +200,11 @@ app.post("/login", (req, res) => {
             if (data.length < 0) {
               // username does not exist
               res.status(501).json({ status: -2 });
+              return;
+            }
+
+            if(data[0].type < 0) {
+              res.status(401).json({ status: -3 });
               return;
             }
 
@@ -398,7 +403,7 @@ app.get("/cart", (req, res) => {
               return;
             }
 
-            if(data[0].inventory_id === null) {
+            if (data[0].inventory_id === null) {
               res.json({ cart: [] }); // send cart to user
               return;
             }
@@ -440,6 +445,100 @@ app.get("/earnings", (req, res) => {
 
       }
     );
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
+
+app.get("/users", (req, res) => {
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    pool.query(
+      "SELECT * FROM user WHERE email = ?",
+      [email],
+      (err, data) => {
+        if (err) {
+          logger.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        if (data[0].type == 2) // if admin
+        {
+          pool.query(
+            "SELECT * FROM user",
+            [account_guid],
+            (err, data) => {
+              if (err) {
+                console.error(err);
+                res.status(401).json({ status: -2 });
+                return;
+              }
+
+              res.json(data);
+
+            }
+          );
+        }
+
+        else {
+          res.status(401).json({ status: -3 });
+        }
+      });
+
+
+  } catch (error) {
+    res.status(500).json({ status: 0 });
+  }
+});
+
+app.put("/users", (req, res) => {
+  try {
+    // Declare variables from request
+
+    const account_guid = jwt.verify(
+      req.headers.authorization.split(" ")[1],
+      process.env.ACCESS_SECRET
+    ).account_guid;
+
+    const guid = req.body.account_guid;
+
+    pool.query(
+      "SELECT * FROM user WHERE email = ?",
+      [email],
+      (err, data) => {
+        if (err) {
+          logger.error(err);
+          res.status(401).json({ status: -1 });
+          return;
+        }
+
+        if (data[0].type == 2) // if admin
+        {
+          pool.query("UPDATE user SET type = -1 WHERE account_guid = ?", [guid], (err, data) => {
+            if (err) {
+              console.error(err);
+              res.status(401).json({ status: -3 });
+              return;
+            }
+
+            res.json({ status: 1 });
+
+          });
+        }
+
+        else {
+          res.status(401).json({ status: -3 });
+        }
+      });
+
+
   } catch (error) {
     res.status(500).json({ status: 0 });
   }
