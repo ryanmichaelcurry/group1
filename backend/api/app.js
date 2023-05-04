@@ -768,6 +768,7 @@ app.post("/checkout", (req, res) => {
               resultList.push({ account_guid: guid, earnings: result[guid] });
             }
 
+            var total = 0;
 
             // increment each account_guid's earnings
             resultList.forEach(element => {
@@ -780,12 +781,15 @@ app.post("/checkout", (req, res) => {
                     res.status(401).json({ status: -1 });
                     return;
                   }
+
+                  total += element.earnings;
+
                 });
             });
 
             // set cart_id checkout = 1
 
-            pool.query("UPDATE cart SET checkout = 1 WHERE account_guid = ?", [account_guid], (err, data) => {
+            pool.query("UPDATE cart SET checkout = 1, total = ? WHERE account_guid = ?", [total, account_guid], (err, data) => {
               if (err) {
                 console.error(err);
                 res.status(401).json({ status: -3 });

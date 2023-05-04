@@ -102,7 +102,7 @@ export const StoreProvider = ({ children }) => {
         if (typeof state.user !== 'undefined') {
             send("GET:/inventory").then((res) => setInventory(res.inventory));
             try {
-                send("GET:/cart").then((res) => { console.log("in use Effect", res); setCartItems(res.cart);});
+                send("GET:/cart").then((res) => { setCartItems(res.cart);});
             }
             catch (e) {
                 console.log(e);

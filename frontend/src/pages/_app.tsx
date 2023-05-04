@@ -9,6 +9,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { ApiContext, ApiProvider } from '../context/ApiContext';
 import { AuthContext, AuthProvider } from '../context/AuthContext';
 import { StoreContext, StoreProvider } from '../context/StoreContext';
+import { Center, Loader, Flex } from '@mantine/core';
 
 export function AuthFlow(props: AppProps) {
   const router = useRouter();
@@ -24,11 +25,20 @@ export function AuthFlow(props: AppProps) {
 
   if (!isUserAuthenticated && !isLoginPage) {
     router.replace('/login');
-    return <h1>Loading...</h1>;
+    return (
+      <div
+        style={{
+          position: 'absolute', left: '50%', top: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
+        <Loader size="lg" />
+      </div>
+    )
   } else if (isLoginPage && isUserAuthenticated) {
     router.replace('/');
   }
-  
+
   // else: let them pass!
 
   return (
@@ -48,7 +58,16 @@ export const ProtectRoute = ({ children }) => {
   const isUserAuthenticated = state.userToken === null ? false : true;
 
   if (state.isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <div
+        style={{
+          position: 'absolute', left: '50%', top: '50%',
+          transform: 'translate(-50%, -50%)'
+        }}
+      >
+        <Loader size="lg" />
+      </div>
+    )
   }
 
   return children;

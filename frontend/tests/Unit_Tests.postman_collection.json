@@ -1,0 +1,568 @@
+{
+	"info": {
+		"_postman_id": "91bc7e51-0cfa-4385-85e0-8355ae8492fa",
+		"name": "Unit Tests",
+		"description": "In order to ensure correct test results, run the collection rather than individual tests. This is because earlier tests store authorization tokens necessary for tests that follow them.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26936187",
+		"_collection_link": "https://www.postman.com/hutdude/workspace/legal-paperweights/collection/26936187-91bc7e51-0cfa-4385-85e0-8355ae8492fa?action=share&creator=26936187&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "#1-Login Seller",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure accessToken is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.accessToken).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user email has string and is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.email).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user first and last name has string and is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.firstName).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.firstName).to.not.be.null;\r",
+							"    pm.expect(jsonData.user.lastName).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.lastName).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user type is an integer and between values 0-2 (inclusive)\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.type).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.user.type).to.be.above(-1);\r",
+							"    pm.expect(jsonData.user.type).to.be.below(3);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.globals.set(\"AccessToken\", jsonData.accessToken);\r",
+							"\r",
+							"postman.setNextRequest(\"#1-Login Admin\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test@test.com\",\r\n    \"password\": \"test\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#1-Login Admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure accessToken is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.accessToken).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user email has string and is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.email).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.email).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user first and last name has string and is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.firstName).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.firstName).to.not.be.null;\r",
+							"    pm.expect(jsonData.user.lastName).to.be.a(\"string\");\r",
+							"    pm.expect(jsonData.user.lastName).to.not.be.null;\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Ensure user type is an integer and equal to 2 (admin)\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.user.type).to.be.a(\"number\");\r",
+							"    pm.expect(jsonData.user.type).to.equal(2);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.globals.set(\"AdminAccessToken\", jsonData.accessToken);\r",
+							"\r",
+							"postman.setNextRequest(\"#2-Retrieve User Cart\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"mctester@test.com\",\r\n    \"password\": \"minecraft\"\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#2-Retrieve User Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"If there are items in cart, make sure inventory_id is a number and not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if(jsonData.cart.length == 0){\r",
+							"        pm.expect(true).to.be.true;\r",
+							"    }\r",
+							"    else{\r",
+							"        pm.expect(jsonData.cart[0].inventory_id).to.be.a(\"number\");\r",
+							"        pm.expect(jsonData.cart[0].inventory_id).to.not.be.null;\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.test(\"If there are items in cart, make sure inventory_id is a number and not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if(jsonData.cart.length == 0){\r",
+							"        pm.expect(true).to.be.true;\r",
+							"    }\r",
+							"    else{\r",
+							"        pm.expect(jsonData.cart[0].inventory_id).to.be.a(\"number\");\r",
+							"        pm.expect(jsonData.cart[0].inventory_id).to.not.be.null;\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"#2-Checkout\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/cart",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"cart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#2-Checkout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"status == 1\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.status).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"#2-Get Transaction History\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseUrl}}/checkout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"checkout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#2-Get Transaction History",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"If there are carts in history, ensure carts have checkout code of 1\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if(jsonData.transactions.length == 0){\r",
+							"        pm.expect(true).to.be.true;\r",
+							"    }\r",
+							"    else{\r",
+							"        pm.expect(jsonData.transactions[0].checkout).to.be.a(\"number\");\r",
+							"        pm.expect(jsonData.transactions[0].checkout).to.equal(1);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"#3-Upload Item To Sell\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/transactions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#3-Upload Item To Sell",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Status equals 1\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.status).to.eql(1);\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"#3-Receive Payments\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Test Item\",\r\n    \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Test-Logo.svg/783px-Test-Logo.svg.png\",\r\n    \"quantity\": 6,\r\n    \"price\": 123.45,\r\n    \"description\": \"Testing the /inventory POST request\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/inventory",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"inventory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#3-Receive Payments",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"earnings repsonse is a number\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.earnings).to.be.a(\"number\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"earnings repsonse is not null\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.earnings).to.not.be.null;\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"#4-Get List of Users\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/earnings",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"earnings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#4-Get List of Users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"console.log(jsonData.length);\r",
+							"\r",
+							"pm.test(\"There should be users in the system, make sure response is not empty\", function () {\r",
+							"    pm.expect(jsonData.length).to.be.greaterThan(0);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check that Users have a type 0-2\", function () {\r",
+							"    for(let i = 0; i < jsonData.length; i++)\r",
+							"    {\r",
+							"        pm.expect(jsonData[i].type).to.be.lessThan(3);\r",
+							"        pm.expect(jsonData[i].type).to.be.greaterThan(-1);\r",
+							"\r",
+							"    }\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check that emails have an @ (valid email)\", function () {\r",
+							"    for(let i = 0; i < jsonData.length; i++)\r",
+							"    {\r",
+							"        pm.expect(jsonData[i].email).to.contain(\"@\");\r",
+							"\r",
+							"    }\r",
+							"    \r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check that current uers have all agreed to terms of service\", function () {\r",
+							"    for(let i = 0; i < jsonData.length; i++)\r",
+							"    {\r",
+							"        pm.expect(jsonData[i].terms).to.equal(1);\r",
+							"\r",
+							"    }\r",
+							"    \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{AdminAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "#4-Change User Status",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
